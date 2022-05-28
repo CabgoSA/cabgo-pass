@@ -44,8 +44,6 @@ class AppState with ChangeNotifier{
     List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
     _initialPosition = LatLng(position.latitude, position.longitude);
     locationController.text = placemarks[0].street + " "+placemarks[0].locality;
-    print('----------------------------------');
-    print(position);
 
     notifyListeners();
   }
@@ -54,6 +52,7 @@ class AppState with ChangeNotifier{
 
   // ! ADD A MARKER ON THE MAO
   void _addMarker(LatLng location, String address) {
+    _markers.clear();
     _markers.add(Marker(
         markerId: MarkerId(uuid.v4()),
         position: location,
@@ -72,6 +71,14 @@ class AppState with ChangeNotifier{
     final directions = await GoogleMapsServices()
         .getDirections(origin: _initialPosition, destination: destination );
           _info = directions;
+    mapController.animateCamera(
+    _info != null
+    ? CameraUpdate.newLatLngBounds(_info.bounds, 100.0)
+        : CameraUpdate.newCameraPosition(CameraPosition(
+      target: _initialPosition,
+      zoom: 11.5,
+    )),
+    );
     }
 
   // ON CAMERA MOVE

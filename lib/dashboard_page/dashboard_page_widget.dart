@@ -112,7 +112,7 @@ class _MapState extends State<Map> {
             children: <Widget>[
               GoogleMap(
                 initialCameraPosition:
-                    CameraPosition(target: appState.initialPosition, zoom: 17),
+                    CameraPosition(target: appState.initialPosition, zoom: 18),
                         onMapCreated: appState.onCreated,
                         myLocationEnabled: true,
                         mapType: MapType.normal,
@@ -132,6 +132,34 @@ class _MapState extends State<Map> {
                             },
 
               ),
+              if (appState.info != null)
+                Positioned(
+                  top: 20.0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6.0,
+                      horizontal: 12.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.yellowAccent,
+                      borderRadius: BorderRadius.circular(20.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          offset: Offset(0, 2),
+                          blurRadius: 6.0,
+                        )
+                      ],
+                    ),
+                    child: Text(
+                      '${appState.info.totalDistance}, ${appState.info.totalDuration}',
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
               Positioned(
                 top: 50.0,
                 right: 15.0,
