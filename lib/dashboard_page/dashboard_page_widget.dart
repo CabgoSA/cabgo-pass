@@ -119,8 +119,17 @@ class _MapState extends State<Map> {
                         markers: appState.markers,
                         onCameraMove: appState.onCameraMove,
                         compassEnabled: true,
-                        polylines: appState.polyLines,
-                        buildingsEnabled: true,
+                          polylines: {
+                              if (appState.info != null)
+                                Polyline(
+                                  polylineId: const PolylineId('overview_polyline'),
+                                  color: Colors.red,
+                                  width: 5,
+                                  points: appState.info.polylinePoints
+                                      .map((e) => LatLng(e.latitude, e.longitude))
+                                      .toList(),
+                                ),
+                            },
 
               ),
               Positioned(
