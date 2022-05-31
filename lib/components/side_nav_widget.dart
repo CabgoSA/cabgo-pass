@@ -26,6 +26,7 @@ class _SideNavWidgetState extends State<SideNavWidget> {
       decoration: BoxDecoration(
         color: Color(0xFFEEEEEE),
       ),
+      child: SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -295,6 +296,7 @@ class _SideNavWidgetState extends State<SideNavWidget> {
           ),
         ],
       ),
+    ),
     );
   }
 }

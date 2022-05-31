@@ -57,6 +57,8 @@ class _HomePageWidgetState extends State<HomePageWidget>
       body: SafeArea(
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
+    child: SingleChildScrollView(
+
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
@@ -90,7 +92,7 @@ class _HomePageWidgetState extends State<HomePageWidget>
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Image.asset(
-                                          'assets/images/car_intro.png',
+                                          'assets/images/intro.png',
                                           width: 100,
                                           height: 100,
                                           fit: BoxFit.contain,
@@ -110,7 +112,7 @@ class _HomePageWidgetState extends State<HomePageWidget>
                                           ),
                                         ),
                                         Text(
-                                          'Services to transport you where you neeed to go.   A lot can happen, on our ride.',
+                                          'Services to transport you where you need to go.   A lot can happen, on our ride.',
                                           textAlign: TextAlign.center,
                                           style: FlutterFlowTheme.of(context)
                                               .bodyText1
@@ -342,6 +344,7 @@ class _HomePageWidgetState extends State<HomePageWidget>
               ),
             ],
           ),
+    ),
         ),
       ),
     );

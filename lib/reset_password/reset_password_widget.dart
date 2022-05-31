@@ -52,22 +52,26 @@ class _ResetPasswordWidgetState extends State<ResetPasswordWidget> {
       body: SafeArea(
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
+          child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 1,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFEEEEEE),
+              SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 1,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFEEEEEE),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
+          ),
           ),
         ),
       ),

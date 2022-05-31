@@ -134,7 +134,7 @@ class _MapState extends State<Map> {
               ),
               if (appState.info != null)
                 Positioned(
-                  top: 20.0,
+                  top: 30.0,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       vertical: 6.0,
@@ -152,7 +152,8 @@ class _MapState extends State<Map> {
                       ],
                     ),
                     child: Text(
-                      '${appState.info.totalDistance}, ${appState.info.totalDuration}',
+                      '${appState.info.totalDistance}, ${appState.info
+                          .totalDuration}',
                       style: const TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.w600,
@@ -160,8 +161,9 @@ class _MapState extends State<Map> {
                     ),
                   ),
                 ),
+
               Positioned(
-                top: 50.0,
+                top: 60.0,
                 right: 15.0,
                 left: 15.0,
                 child: Container(
@@ -199,7 +201,7 @@ class _MapState extends State<Map> {
                 ),
               ),
               Positioned(
-                top: 105.0,
+                top: 120.0,
                 right: 15.0,
                 left: 15.0,
                 child: Container(

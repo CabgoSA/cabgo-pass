@@ -372,83 +372,86 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                                           EdgeInsetsDirectional
                                                               .fromSTEB(
                                                                   12, 0, 0, 0),
-                                                      child: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            'Choose Language',
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .subtitle2
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Lexend Deca',
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontSize: 18,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w300,
-                                                                ),
-                                                          ),
-                                                          FlutterFlowRadioButton(
-                                                            options: ['English']
-                                                                .toList(),
-                                                            onChanged: (value) {
-                                                              setState(() =>
-                                                                  radioButtonValue =
-                                                                      value);
-                                                            },
-                                                            optionHeight: 25,
-                                                            textStyle:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyText1
-                                                                    .override(
-                                                                      fontFamily:
-                                                                          'Red Hat Display',
-                                                                      color: Colors
-                                                                          .black,
-                                                                    ),
-                                                            selectedTextStyle:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyText1
-                                                                    .override(
-                                                                      fontFamily:
-                                                                          'Red Hat Display',
-                                                                      color: Colors
-                                                                          .black,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600,
-                                                                    ),
-                                                            buttonPosition:
-                                                                RadioButtonPosition
-                                                                    .left,
-                                                            direction:
-                                                                Axis.vertical,
-                                                            radioButtonColor:
-                                                                Colors.blue,
-                                                            inactiveRadioButtonColor:
-                                                                Color(
-                                                                    0x8A000000),
-                                                            toggleable: false,
-                                                            horizontalAlignment:
-                                                                WrapAlignment
-                                                                    .start,
-                                                            verticalAlignment:
-                                                                WrapCrossAlignment
-                                                                    .start,
-                                                          ),
-                                                        ],
+                                                      
+                                                      child: SingleChildScrollView(
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.max,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              'Choose Language',
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .subtitle2
+                                                                  .override(
+                                                                    fontFamily:
+                                                                        'Lexend Deca',
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontSize: 18,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w300,
+                                                                  ),
+                                                            ),
+                                                            FlutterFlowRadioButton(
+                                                              options: ['English']
+                                                                  .toList(),
+                                                              onChanged: (value) {
+                                                                setState(() =>
+                                                                    radioButtonValue =
+                                                                        value);
+                                                              },
+                                                              optionHeight: 25,
+                                                              textStyle:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodyText1
+                                                                      .override(
+                                                                        fontFamily:
+                                                                            'Red Hat Display',
+                                                                        color: Colors
+                                                                            .black,
+                                                                      ),
+                                                              selectedTextStyle:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodyText1
+                                                                      .override(
+                                                                        fontFamily:
+                                                                            'Red Hat Display',
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w600,
+                                                                      ),
+                                                              buttonPosition:
+                                                                  RadioButtonPosition
+                                                                      .left,
+                                                              direction:
+                                                                  Axis.vertical,
+                                                              radioButtonColor:
+                                                                  Colors.blue,
+                                                              inactiveRadioButtonColor:
+                                                                  Color(
+                                                                      0x8A000000),
+                                                              toggleable: false,
+                                                              horizontalAlignment:
+                                                                  WrapAlignment
+                                                                      .start,
+                                                              verticalAlignment:
+                                                                  WrapCrossAlignment
+                                                                      .start,
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ),

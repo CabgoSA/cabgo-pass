@@ -79,9 +79,9 @@ class _SocialsPageWidgetState extends State<SocialsPageWidget> {
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               Image.asset(
-                                'assets/images/gxif9_600',
-                                width: 100,
-                                height: 100,
+                                'assets/images/unnamed.png',
+                                width: 40,
+                                height: 40,
                                 fit: BoxFit.cover,
                               ),
                               Text(
@@ -106,15 +106,11 @@ class _SocialsPageWidgetState extends State<SocialsPageWidget> {
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                              Padding(
-                                padding:
-                                    EdgeInsetsDirectional.fromSTEB(0, 0, 8, 0),
-                                child: FaIcon(
-                                  FontAwesomeIcons.google,
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryColor,
-                                  size: 24,
-                                ),
+                              Image.asset(
+                                'assets/images/download_(1).png',
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.cover,
                               ),
                               Text(
                                 'Google',

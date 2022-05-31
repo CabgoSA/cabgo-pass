@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_webservice/places.dart' hide Location ;
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../requests/directions_model.dart';
 import '../requests/google_maps_requests.dart';
@@ -102,8 +104,25 @@ class AppState with ChangeNotifier{
       }
     });
 
+  }
+
+  //prediction function
+  Future<void> _handlePressButton() async {
+    Prediction? p = await PlacesAutocomplete.show(
+        context: context,
+        apiKey: kGoogleApiKey,
+        onError: onError,
+        mode: _mode,
+        language: 'en',
+        strictbounds: false,
+        types: [""],
+        decoration: InputDecoration(
+            hintText: 'Search',
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Colors.white))),
+        components: [Component(Component.country,"pk"),Component(Component.country,"usa")]);
 
 
+    displayPrediction(p!,homeScaffoldKey.currentState);
   }
 
 }

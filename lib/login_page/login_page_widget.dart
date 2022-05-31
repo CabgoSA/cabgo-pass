@@ -51,8 +51,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                         padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
                         child: Image.asset(
                           'assets/images/Logo_Cabgo.png',
-                          width: 200,
-                          height: 200,
+                          width: 120,
+                          height: 120,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -64,6 +64,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             Expanded(
                               child: Text(
                                 'Welcome Back,',
+                                textAlign: TextAlign.center,
                                 style: FlutterFlowTheme.of(context).title1,
                               ),
                             ),
@@ -229,7 +230,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                               },
                               text: 'Forgot Password?',
                               options: FFButtonOptions(
-                                width: 120,
+                                width: 160,
                                 height: 40,
                                 color: FlutterFlowTheme.of(context)
                                     .secondaryBackground,
@@ -291,7 +292,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                         color: FlutterFlowTheme.of(context).lineColor,
                       ),
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(0, 8, 0, 0),
+                        padding: EdgeInsetsDirectional.fromSTEB(0, 8, 0, 12),
                         child: FFButtonWidget(
                           onPressed: () async {
                             await Navigator.push(
