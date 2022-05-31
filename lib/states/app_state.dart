@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocode/geocode.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_webservice/places.dart' hide Location ;
-import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../requests/directions_model.dart';
 import '../requests/google_maps_requests.dart';
@@ -10,6 +10,7 @@ import 'package:uuid/uuid.dart';
 
 class AppState with ChangeNotifier{
 
+  static const _apiKey = 'AIzaSyDuQbYTtgD64DsfsEnGhFc4-Vjfi4_7mfQ';
   static LatLng _initialPosition;
   LatLng _lastPosition = _initialPosition;
   final Set<Polyline> _polyLines = {};
@@ -26,6 +27,10 @@ class AppState with ChangeNotifier{
     distanceFilter: 100,
   );
 
+  GeoCode _geoCode = GeoCode();
+
+
+  GeoCode get geoCode => _geoCode;
   Directions _info;
   Directions get info => _info; //GETTERS
   LatLng get initialPosition => _initialPosition;
@@ -34,6 +39,13 @@ class AppState with ChangeNotifier{
   GoogleMapController get mapController => _mapController;
   Set<Marker> get markers => _markers;
   Set<Polyline> get polyLines => _polyLines;
+  String get apiKey => _apiKey;
+  GoogleMapsPlaces places = GoogleMapsPlaces(apiKey: _apiKey);
+
+
+  String requestedDestination;
+  double requestedDestinationLat;
+  double requestedDestinationLng;
 
   AppState(){
     _getUserLocation();
@@ -106,23 +118,13 @@ class AppState with ChangeNotifier{
 
   }
 
-  //prediction function
-  Future<void> _handlePressButton() async {
-    Prediction? p = await PlacesAutocomplete.show(
-        context: context,
-        apiKey: kGoogleApiKey,
-        onError: onError,
-        mode: _mode,
-        language: 'en',
-        strictbounds: false,
-        types: [""],
-        decoration: InputDecoration(
-            hintText: 'Search',
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Colors.white))),
-        components: [Component(Component.country,"pk"),Component(Component.country,"usa")]);
+
+//prediction
+  searchPlaces(String searchTerm) async {
+    searchResults = await placesService.getAutocomplete(searchTerm);
+    notifyListeners();
 
 
-    displayPrediction(p!,homeScaffoldKey.currentState);
+
+
   }
-
-}

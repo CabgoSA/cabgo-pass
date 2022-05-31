@@ -1,3 +1,6 @@
+
+import 'package:google_maps_webservice/places.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import '../components/side_nav_widget.dart';
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
@@ -225,6 +228,16 @@ class _MapState extends State<Map> {
                     onSubmitted: (value) {
                       appState.sendRequest(value);
                     },
+                     onChanged: (value) async{
+                       const kGoogleApiKey = 'AIzaSyDuQbYTtgD64DsfsEnGhFc4-Vjfi4_7mfQ';
+
+                       Prediction p = await PlacesAutocomplete.show(
+                           context: context,
+                           apiKey: kGoogleApiKey,
+                           mode: Mode.overlay, // Mode.fullscreen
+                           language: "fr",
+                           components: [new Component(Component.country, "za")]);
+                     },
                     decoration: InputDecoration(
                       icon: Container(
                         margin: EdgeInsets.only(left: 20, top: 5),
@@ -280,4 +293,6 @@ class _MapState extends State<Map> {
             ],
           );
   }
+
+
 }
