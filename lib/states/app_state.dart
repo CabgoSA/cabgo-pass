@@ -119,12 +119,6 @@ class AppState with ChangeNotifier{
   }
 
 
-//prediction
-  searchPlaces(String searchTerm) async {
-    searchResults = await placesService.getAutocomplete(searchTerm);
-    notifyListeners();
+}
 
 
-
-
-  }
