@@ -29,10 +29,8 @@ class ApiClient {
         options: Options(headers: {'Accept': 'application/json'}),
       );
 
-      if(response.statusCode == 200) {
-        await otp(phone);
         return response.data;
-      }
+
     } on DioError catch (e) {
       return e.response.data;
     }
@@ -43,7 +41,7 @@ class ApiClient {
       Response response = await _dio.post(
         dotenv.get('BASE_URL') + 'api/user/otp' ,
         data : {
-          'otp': phone,
+          'mobile': phone,
         },
         options: Options(headers: {'Accept': 'application/json'}),
       );

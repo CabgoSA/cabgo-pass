@@ -174,6 +174,8 @@ class AppState with ChangeNotifier{
       _isLoggedIn = true;
     }
     notifyListeners();
+
+    print('test login');
     }
 
   // ! SEND REQUEST
