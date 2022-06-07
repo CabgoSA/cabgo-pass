@@ -2,7 +2,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cabgo/requests/directions_model.dart';
-const apiKey = 'AIzaSyDuQbYTtgD64DsfsEnGhFc4-Vjfi4_7mfQ';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 class GoogleMapsServices{
   static const String _baseUrl =
@@ -21,7 +22,7 @@ class GoogleMapsServices{
       queryParameters: {
         'origin': '${origin.latitude},${origin.longitude}',
         'destination': '${destination.latitude},${destination.longitude}',
-        'key': apiKey,
+        'key': dotenv.get('API_KEY'),
       },
     );
 

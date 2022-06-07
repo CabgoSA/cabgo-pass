@@ -1,14 +1,15 @@
 import '../flutter_flow/flutter_flow_theme.dart';
-import '../flutter_flow/flutter_flow_util.dart';
 import '../help_page/help_page_widget.dart';
 import '../offers_page/offers_page_widget.dart';
+import '../home_page/home_page_widget.dart';
 import '../payment_page/payment_page_widget.dart';
 import '../settings/settings_widget.dart';
 import '../trips_page/trips_page_widget.dart';
 import '../wallet_page/wallet_page_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:cabgo/states/app_state.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:provider/provider.dart';
 
 class SideNavWidget extends StatefulWidget {
   const SideNavWidget({Key key}) : super(key: key);
@@ -20,6 +21,7 @@ class SideNavWidget extends StatefulWidget {
 class _SideNavWidgetState extends State<SideNavWidget> {
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 100,
@@ -275,12 +277,15 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                   padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
                   child: InkWell(
                     onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => WalletPageWidget(),
-                        ),
-                      );
+                      await appState.passangerLogout();
+                      if(!appState.isLoggedIn) {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomePageWidget(),
+                          ),
+                        );
+                      }
                     },
                     child: Text(
                       'Logout',

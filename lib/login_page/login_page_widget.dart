@@ -1,3 +1,4 @@
+import 'package:provider/provider.dart';
 import '../dashboard_page/dashboard_page_widget.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
@@ -6,6 +7,7 @@ import '../register_page/register_page_widget.dart';
 import '../reset_password/reset_password_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cabgo/states/app_state.dart';
 
 class LoginPageWidget extends StatefulWidget {
   const LoginPageWidget({Key key}) : super(key: key);
@@ -15,21 +17,20 @@ class LoginPageWidget extends StatefulWidget {
 }
 
 class _LoginPageWidgetState extends State<LoginPageWidget> {
-  TextEditingController emailAddressController;
-  TextEditingController passwordController;
+
   bool passwordVisibility;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    emailAddressController = TextEditingController();
-    passwordController = TextEditingController();
+
     passwordVisibility = false;
   }
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Colors.white,
@@ -79,7 +80,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                           children: [
                             Expanded(
                               child: TextFormField(
-                                controller: emailAddressController,
+                                controller: appState.emailAddressController,
                                 obscureText: false,
                                 decoration: InputDecoration(
                                   labelText: 'Email Address',
@@ -144,7 +145,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                           children: [
                             Expanded(
                               child: TextFormField(
-                                controller: passwordController,
+                                controller: appState.passwordController,
                                 obscureText: !passwordVisibility,
                                 decoration: InputDecoration(
                                   labelText: 'Password',
@@ -253,12 +254,16 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             ),
                             FFButtonWidget(
                               onPressed: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DashboardPageWidget(),
-                                  ),
-                                );
+                                appState.passangerLogin();
+                                if(appState.isLoggedIn) {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DashboardPageWidget(),
+                                    ),
+                                  );
+                                }
                               },
                               text: 'Login',
                               options: FFButtonOptions(
