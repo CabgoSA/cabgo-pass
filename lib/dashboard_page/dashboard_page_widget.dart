@@ -1,6 +1,3 @@
-
-import 'package:google_maps_webservice/places.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
 import '../components/side_nav_widget.dart';
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
@@ -24,6 +21,7 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       key: scaffoldKey,
       resizeToAvoidBottomInset: false,
@@ -228,15 +226,8 @@ class _MapState extends State<Map> {
                     onSubmitted: (value) {
                       appState.sendRequest(value);
                     },
-                     onChanged: (value) async{
-                       const kGoogleApiKey = 'AIzaSyDuQbYTtgD64DsfsEnGhFc4-Vjfi4_7mfQ';
+                     onChanged: (value){
 
-                       Prediction p = await PlacesAutocomplete.show(
-                           context: context,
-                           apiKey: kGoogleApiKey,
-                           mode: Mode.overlay, // Mode.fullscreen
-                           language: "fr",
-                           components: [new Component(Component.country, "za")]);
                      },
                     decoration: InputDecoration(
                       icon: Container(
