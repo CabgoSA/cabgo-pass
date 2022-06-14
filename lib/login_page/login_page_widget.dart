@@ -8,6 +8,7 @@ import '../reset_password/reset_password_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cabgo/states/app_state.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 
 class LoginPageWidget extends StatefulWidget {
   const LoginPageWidget({Key key}) : super(key: key);
@@ -21,6 +22,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
   bool passwordVisibility;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -276,11 +278,10 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                 borderRadius: 12,
                               ),
                             ),
-                            FFButtonWidget(
+                            ElevatedButton(
                               onPressed: () async {
                                 if(formKey.currentState.validate()){
-                                  // final snackBar = SnackBar(content: Text('Submiting Please wait...'));
-                                  // _scaffoldKey.currentState!.showSnackBar(snackBar);
+                                  isLoading = true;
                                   appState.passangerLogin();
                                   if(appState.isLoggedIn) {
                                     await Navigator.push(
@@ -291,32 +292,30 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                       ),
                                     );
                                   }
+                                  isLoading = false;
+
                                 }
 
 
                               },
-                              text: 'Login',
-                              options: FFButtonOptions(
-                                width: 130,
-                                height: 50,
-                                color:
-                                    FlutterFlowTheme.of(context).primaryColor,
-                                textStyle: FlutterFlowTheme.of(context)
-                                    .subtitle2
-                                    .override(
-                                      fontFamily: 'Lexend Deca',
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                borderSide: BorderSide(
-                                  color: Colors.transparent,
-                                  width: 1,
-                                ),
-                                borderRadius: 5,
+                              child: isLoading ?   CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                                  : Text( 'Login'),
+                              //
+                              // style: ButtonStyle(
+                              //     backgroundColor: MaterialStateProperty.all(),
+                              //
+                              //     textStyle: MaterialStateProperty.all(TextStyle(fontSize: 14))),
+
+                              style: ElevatedButton.styleFrom(
+                                  fixedSize: const Size(130, 40),
+                                  primary: FlutterFlowTheme.of(context).primaryColor),
+
                               ),
-                            ),
-                          ],
+
+
+                  ],
                         ),
                       ),
                       Divider(
