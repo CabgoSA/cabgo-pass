@@ -20,6 +20,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
 
   bool passwordVisibility;
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -34,8 +35,17 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Colors.white,
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
+      body:
+
+
+
+
+
+
+
+      Form(
+        // autovalidateMode: AutovalidateMode.onUserInteraction,
+        key: formKey,
         child: Align(
           alignment: AlignmentDirectional(0, 1),
           child: SingleChildScrollView(
@@ -131,6 +141,13 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
                                     ),
+                                validator: (value){
+                                  if(value != null && value.length <7 || !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value) ){
+                                    return "Enter valid email";
+                                  }else{
+                                    return null;
+                                  }
+                                },
                                 keyboardType: TextInputType.emailAddress,
                               ),
                             ),
@@ -209,6 +226,13 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
                                     ),
+                                validator: (value){
+                                  if(value != null && value.length <4 ){
+                                    return "Enter valid pasword";
+                                  }else{
+                                    return null;
+                                  }
+                                },
                               ),
                             ),
                           ],
@@ -254,16 +278,22 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             ),
                             FFButtonWidget(
                               onPressed: () async {
-                                appState.passangerLogin();
-                                if(appState.isLoggedIn) {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          DashboardPageWidget(),
-                                    ),
-                                  );
+                                if(formKey.currentState.validate()){
+                                  // final snackBar = SnackBar(content: Text('Submiting Please wait...'));
+                                  // _scaffoldKey.currentState!.showSnackBar(snackBar);
+                                  appState.passangerLogin();
+                                  if(appState.isLoggedIn) {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            DashboardPageWidget(),
+                                      ),
+                                    );
+                                  }
                                 }
+
+
                               },
                               text: 'Login',
                               options: FFButtonOptions(

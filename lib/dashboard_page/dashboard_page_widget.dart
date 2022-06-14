@@ -223,7 +223,7 @@ class _MapState extends State<Map> {
                       appState.sendRequest(value);
                       _bottomSheetMore(context);
                     },
-                    
+
                     decoration: InputDecoration(
                       icon: Container(
                         margin: EdgeInsets.only(left: 20, top: 5),
