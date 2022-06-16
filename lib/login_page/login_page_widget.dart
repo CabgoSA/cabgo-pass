@@ -37,15 +37,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Colors.white,
-      body:
-
-
-
-
-
-
-
-      Form(
+      body: Form(
         // autovalidateMode: AutovalidateMode.onUserInteraction,
         key: formKey,
         child: Align(
@@ -280,10 +272,12 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             ),
                             ElevatedButton(
                               onPressed: () async {
+
                                 if(formKey.currentState.validate()){
                                   isLoading = true;
                                   appState.passangerLogin();
-                                  if(appState.isLoggedIn) {
+                                  // if(appState.isLoggedIn) {
+
                                     await Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -291,7 +285,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                             DashboardPageWidget(),
                                       ),
                                     );
-                                  }
+                                  // }
                                   isLoading = false;
 
                                 }
@@ -302,11 +296,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                 color: Colors.white,
                               )
                                   : Text( 'Login'),
-                              //
-                              // style: ButtonStyle(
-                              //     backgroundColor: MaterialStateProperty.all(),
-                              //
-                              //     textStyle: MaterialStateProperty.all(TextStyle(fontSize: 14))),
+
 
                               style: ElevatedButton.styleFrom(
                                   fixedSize: const Size(130, 40),

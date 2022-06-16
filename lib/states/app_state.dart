@@ -6,16 +6,18 @@ import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_webservice/places.dart' hide Location ;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../requests/directions_model.dart';
-import '../requests/google_maps_requests.dart';
+import 'package:cabgo/requests/directions_model.dart';
+import 'package:cabgo/requests/google_maps_requests.dart';
 import 'package:uuid/uuid.dart';
 
-import '../requests/login.dart';
+import 'package:cabgo/requests/login.dart';
+import 'package:cabgo/requests/trip_request.dart';
 
 class AppState with ChangeNotifier{
 
 
   static LatLng _initialPosition;
+  LatLng destination;
   LatLng _lastPosition = _initialPosition;
   final Set<Polyline> _polyLines = {};
   final Set<Marker> _markers = {};
@@ -125,10 +127,10 @@ class AppState with ChangeNotifier{
     List<Location> placemark = await locationFromAddress(intendedLocation,localeIdentifier: 'en');
     double latitude = placemark[0].latitude;
     double longitude = placemark[0].longitude;
-    LatLng destination = LatLng(latitude, longitude);
+    destination = LatLng(latitude, longitude);
     _addMarker(destination, intendedLocation);
     final directions = await GoogleMapsServices()
-        .getDirections(origin: _initialPosition, destination: destination );
+        .getDirections(origin: _initialPosition, destination: destination,);
           _info = directions;
     mapController.animateCamera(
     _info != null
@@ -138,6 +140,8 @@ class AppState with ChangeNotifier{
       zoom: 11.5,
     )),
     );
+
+
     }
 
   // ON CAMERA MOVE
@@ -166,21 +170,20 @@ class AppState with ChangeNotifier{
   //user Auth
   // ! SEND REQUEST
   void passangerLogin() async {
-
     final response = await ApiClient().login(emailAddressController.text,passwordController.text );
     _addNewItem('access_token', response['access_token']);
     _addNewItem('refresh_token', response['refresh_token']);
     if(response['access_token'] != null){
       _isLoggedIn = true;
+
     }
     notifyListeners();
 
-    print('test login');
     }
 
   // ! SEND REQUEST
 
-  void passangerRegister({@required String email, @required String firstName, @required String lastName, @required String phone, @required String password }) async {
+  void passangerRegister({@required String email, @required String firstName, @required String lastName, @required String phone, @required String password, }) async {
 
     final response = await ApiClient().registerUser(registerEmailController.value.text,
                                                     registerFirstNameController.value.text,
@@ -188,7 +191,7 @@ class AppState with ChangeNotifier{
                                                     registerPhoneController.value.text,
                                                     registerPhoneController.value.text,
                                                       );
-    print(response);
+
   }
 
 
@@ -214,6 +217,28 @@ class AppState with ChangeNotifier{
         aOptions: _getAndroidOptions(),
     );
   }
+
+  //get services
+
+  Future<dynamic> getServices() async {
+
+    dynamic data = await TripRequest().getServices();
+
+    return data;
+
+  }
+
+
+  //get services
+
+  Future<dynamic> sendTripRequest(int type, double distance) async {
+
+    dynamic data = await TripRequest().sendRequest(_initialPosition, destination , type, distance, );
+
+    return data;
+
+  }
+
 
 
 

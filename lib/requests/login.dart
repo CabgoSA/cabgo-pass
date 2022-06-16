@@ -68,6 +68,7 @@ class ApiClient {
         },
         options: Options(headers: {'Accept': 'application/json'}),
       );
+
       return response.data;
     } on DioError catch (e) {
       return e.response.data;
