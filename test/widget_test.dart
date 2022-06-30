@@ -1,7 +1,7 @@
-import '../components/side_nav_widget.dart';
-import '../flutter_flow/flutter_flow_icon_button.dart';
-import '../flutter_flow/flutter_flow_theme.dart';
-import '../flutter_flow/flutter_flow_util.dart';
+import 'package:cabgo/views/components/side_nav_widget.dart';
+import 'package:cabgo/flutter_flow/flutter_flow_icon_button.dart';
+import 'package:cabgo/flutter_flow/flutter_flow_theme.dart';
+import 'package:cabgo/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';

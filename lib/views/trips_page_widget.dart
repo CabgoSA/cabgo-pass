@@ -1,10 +1,8 @@
-import '../components/side_nav_widget.dart';
+import 'package:cabgo/views/components/side_nav_widget.dart';
 import '../flutter_flow/flutter_flow_google_map.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
-import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class TripsPageWidget extends StatefulWidget {
   const TripsPageWidget({Key key}) : super(key: key);

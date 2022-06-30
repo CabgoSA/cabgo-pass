@@ -1,4 +1,4 @@
-import '../components/side_nav_widget.dart';
+import 'package:cabgo/views/components/side_nav_widget.dart';
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:cabgo/states/app_state.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
+import 'LocationAccessScreen.dart';
 
 class DashboardPageWidget extends StatefulWidget {
   const DashboardPageWidget({Key key}) : super(key: key);
@@ -134,14 +135,15 @@ class _MapState extends State<Map> {
               ),
               if (appState.info != null)
                 Positioned(
-                  top: 30.0,
+                  top: 15.0,
+                  left: 100.0,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       vertical: 6.0,
                       horizontal: 12.0,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.yellowAccent,
+                      color:  Color(0xFF169F49),
                       borderRadius: BorderRadius.circular(20.0),
                       boxShadow: const [
                         BoxShadow(
@@ -154,8 +156,9 @@ class _MapState extends State<Map> {
                     child: Text(
                       '${appState.info.totalDistance}, ${appState.info.totalDuration}',
                       style: const TextStyle(
-                        fontSize: 18.0,
+                        fontSize: 14.0,
                         fontWeight: FontWeight.w600,
+                        color: Colors.white
                       ),
                     ),
                   ),
@@ -225,8 +228,9 @@ class _MapState extends State<Map> {
                       //get services
                       dynamic data = await appState.getServices();
                      String distance = appState.info.totalDistance.substring(0, appState.info.totalDistance.length - 3);
-                      print('---------------------------------------------------------');
-                      print(distance);
+                     print('------------------------------------------------------------------------------');
+                      print(data);
+
                       _bottomSheetMore(context, appState, data, double.parse(distance));
                     },
 
@@ -538,7 +542,13 @@ class _MapState extends State<Map> {
                       padding: EdgeInsetsDirectional.fromSTEB(10, 0, 0, 0),
                       child: FFButtonWidget(
                         onPressed: () {
-                          print('Button pressed ...');
+                           Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  LocationAccessScreen(),
+                            ),
+                          );
                         },
                         text: 'RIDE NOW',
                         options: FFButtonOptions(

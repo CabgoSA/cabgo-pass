@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "628757832787",
+    "firebase_url": "https://lungataxi.firebaseio.com",
+    "project_id": "lungataxi",
+    "storage_bucket": "lungataxi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:628757832787:android:7d42cec6d9b0481b9e52a6",
+        "android_client_info": {
+          "package_name": "com.cabsgo.user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "628757832787-84hqqioikica6lenfrqdb6a2cibfiu1m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cabsgo.user",
+            "certificate_hash": "5b0148fec0f507b879605089b38d7f3370fd029a"
+          }
+        },
+        {
+          "client_id": "628757832787-6mpgkidjhr423ggn37iv77gpb1ls53bs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnTCD8qcpW9FiZhz4EHdn1F54frjw3ggs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "628757832787-6mpgkidjhr423ggn37iv77gpb1ls53bs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,15 +1,16 @@
-import '../flutter_flow/flutter_flow_theme.dart';
-import '../help_page/help_page_widget.dart';
-import '../offers_page/offers_page_widget.dart';
-import '../home_page/home_page_widget.dart';
-import '../payment_page/payment_page_widget.dart';
-import '../settings/settings_widget.dart';
-import '../trips_page/trips_page_widget.dart';
-import '../wallet_page/wallet_page_widget.dart';
+import 'package:cabgo/views/help_page_widget.dart';
+import 'package:cabgo/views/offers_page_widget.dart';
+import 'package:cabgo/views/home_page_widget.dart';
+import 'package:cabgo/views/payment_page_widget.dart';
+import 'package:cabgo/views/settings_widget.dart';
+import 'package:cabgo/views/trips_page_widget.dart';
+import 'package:cabgo/views/wallet_page_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:cabgo/states/app_state.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:provider/provider.dart';
+
+import '../../flutter_flow/flutter_flow_theme.dart';
 
 class SideNavWidget extends StatefulWidget {
   const SideNavWidget({Key key}) : super(key: key);

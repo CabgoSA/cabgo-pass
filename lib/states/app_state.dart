@@ -9,9 +9,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cabgo/requests/directions_model.dart';
 import 'package:cabgo/requests/google_maps_requests.dart';
 import 'package:uuid/uuid.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cabgo/requests/login.dart';
 import 'package:cabgo/requests/trip_request.dart';
+
+import '../requests/push_notifications.dart';
 
 class AppState with ChangeNotifier{
 
@@ -40,7 +44,7 @@ class AppState with ChangeNotifier{
   TextEditingController registerEmailController = TextEditingController();
   TextEditingController registerFirstNameController = TextEditingController();
   TextEditingController registerLastNameController = TextEditingController();
-  TextEditingController registerPhoneController = TextEditingController(text: '+27');
+  TextEditingController registerPhoneController = TextEditingController();
   TextEditingController registerPasswordController = TextEditingController();
   TextEditingController registerConfirmPasswordController = TextEditingController();
 
@@ -58,10 +62,14 @@ class AppState with ChangeNotifier{
   );
 
   GeoCode _geoCode = GeoCode();
-
-
+  bool incomeMessage = false;
+  bool _isOnline = false;
+  bool get isOnline => _isOnline;
   GeoCode get geoCode => _geoCode;
   bool _isLoggedIn = false;
+
+  FirebaseMessaging _messaging;
+  PushNotifications notifications;
 
   Directions _info;
   Directions get info => _info; //GETTERS
@@ -81,10 +89,51 @@ class AppState with ChangeNotifier{
   double requestedDestinationLat;
   double requestedDestinationLng;
 
+  // //on background handler
+  Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    // make sure you call `initializeApp` before using other Firebase services.
+    await Firebase.initializeApp();
+
+    print("Handling a background message: ${message.messageId}");
+  }
+
   AppState(){
     _getUserLocation();
     _loadingInitialPosition();
     _getTokens();
+    _registerNotification();
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
+
+
+  //    register notification
+  void _registerNotification() async {
+    await Firebase.initializeApp();
+
+    _messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permision ');
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      print('Your token : $fcmToken');
+
+    }
+
+    //on foregroud
+    FirebaseMessaging.onMessage.listen((RemoteMessage message)  {
+      notifications =   PushNotifications(message.data['message'], message.data['requestID']);
+      incomeMessage = true;
+      notifyListeners();
+    });
+
+  //  on background
+
   }
 
 //  get user Location of Device
@@ -169,15 +218,19 @@ class AppState with ChangeNotifier{
 
   //user Auth
   // ! SEND REQUEST
-  void passangerLogin() async {
+  Future<void> passangerLogin() async {
     final response = await ApiClient().login(emailAddressController.text,passwordController.text );
     _addNewItem('access_token', response['access_token']);
     _addNewItem('refresh_token', response['refresh_token']);
+
     if(response['access_token'] != null){
       _isLoggedIn = true;
+      print('token');
+      print(response['access_token']);
+      notifyListeners();
 
     }
-    notifyListeners();
+
 
     }
 
@@ -223,7 +276,8 @@ class AppState with ChangeNotifier{
   Future<dynamic> getServices() async {
 
     dynamic data = await TripRequest().getServices();
-
+    print('test');
+    print(data);
     return data;
 
   }

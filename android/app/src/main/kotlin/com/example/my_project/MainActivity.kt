@@ -1,4 +1,4 @@
-package com.flutterflow.cabgo
+package com.cabsgo.user
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,14 +1,11 @@
 import 'package:provider/provider.dart';
-import '../dashboard_page/dashboard_page_widget.dart';
+import 'dashboard_page_widget.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
-import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
-import '../register_page/register_page_widget.dart';
-import '../reset_password/reset_password_widget.dart';
+import 'package:cabgo/views/register_page_widget.dart';
+import 'package:cabgo/views/reset_password_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cabgo/states/app_state.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 
 class LoginPageWidget extends StatefulWidget {
   const LoginPageWidget({Key key}) : super(key: key);
@@ -91,7 +88,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                   labelStyle: FlutterFlowTheme.of(context)
                                       .bodyText1
                                       .override(
-                                        fontFamily: 'Lexend Deca',
+                                        fontFamily: 'Red Hat Display',
                                         color: Color(0xFF95A1AC),
                                         fontSize: 14,
                                         fontWeight: FontWeight.normal,
@@ -99,7 +96,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                   hintStyle: FlutterFlowTheme.of(context)
                                       .bodyText1
                                       .override(
-                                        fontFamily: 'Lexend Deca',
+                                        fontFamily: 'Red Hat Display',
                                         color: Color(0xFF95A1AC),
                                         fontSize: 14,
                                         fontWeight: FontWeight.normal,
@@ -130,7 +127,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                 style: FlutterFlowTheme.of(context)
                                     .bodyText1
                                     .override(
-                                      fontFamily: 'Roboto',
+                                      fontFamily: 'Red Hat Display',
                                       color: Color(0xFF2B343A),
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
@@ -163,7 +160,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                   labelStyle: FlutterFlowTheme.of(context)
                                       .bodyText1
                                       .override(
-                                        fontFamily: 'Lexend Deca',
+                                        fontFamily: 'Red Hat Display',
                                         color: Color(0xFF95A1AC),
                                         fontSize: 14,
                                         fontWeight: FontWeight.normal,
@@ -171,7 +168,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                   hintStyle: FlutterFlowTheme.of(context)
                                       .bodyText1
                                       .override(
-                                        fontFamily: 'Lexend Deca',
+                                        fontFamily: 'Red Hat Display',
                                         color: Color(0xFF95A1AC),
                                         fontSize: 14,
                                         fontWeight: FontWeight.normal,
@@ -215,7 +212,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                 style: FlutterFlowTheme.of(context)
                                     .bodyText1
                                     .override(
-                                      fontFamily: 'Lexend Deca',
+                                      fontFamily: 'Red Hat Display',
                                       color: Color(0xFF2B343A),
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
@@ -256,7 +253,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                 textStyle: FlutterFlowTheme.of(context)
                                     .subtitle2
                                     .override(
-                                      fontFamily: 'Lexend Deca',
+                                      fontFamily: 'Red Hat Display',
                                       color: FlutterFlowTheme.of(context)
                                           .primaryText,
                                       fontSize: 12,
@@ -275,9 +272,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
 
                                 if(formKey.currentState.validate()){
                                   isLoading = true;
-                                  appState.passangerLogin();
-                                  // if(appState.isLoggedIn) {
-
+                                  await appState.passangerLogin();
+                                   if(appState.isLoggedIn) {
                                     await Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -285,10 +281,11 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                             DashboardPageWidget(),
                                       ),
                                     );
-                                  // }
+                                   }
                                   isLoading = false;
 
                                 }
+
 
 
                               },
@@ -335,7 +332,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             textStyle: FlutterFlowTheme.of(context)
                                 .subtitle2
                                 .override(
-                                  fontFamily: 'Lexend Deca',
+                                  fontFamily: 'Red Hat Display',
                                   color:
                                       FlutterFlowTheme.of(context).primaryColor,
                                   fontSize: 16,
