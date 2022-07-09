@@ -124,4 +124,9 @@ class ApiClient {
   //     return e.response!.data;
   //   }
   // }
+
+
+
 }
+
+class InvalidCredentials implements Exception{}

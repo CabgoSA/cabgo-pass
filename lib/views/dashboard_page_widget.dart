@@ -23,6 +23,22 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
+    if (appState.notifications != null) {
+        print('incoming message');
+        setState(() {
+          appState.dragableTwoVibility = true;
+          appState.dragrableOneVisibilty = false;
+        });
+
+    }
+
+
+
+
+
+
+
     return Scaffold(
       key: scaffoldKey,
       resizeToAvoidBottomInset: false,
@@ -34,7 +50,10 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
           child: SideNavWidget(),
         ),
       ),
-      body: SafeArea(
+      body:
+
+      SafeArea(
+
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Container(
@@ -63,6 +82,7 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
       ),
     );
   }
+
 }
 
 class Map extends StatefulWidget {
@@ -112,27 +132,37 @@ class _MapState extends State<Map> {
           ))
         : Stack(
             children: <Widget>[
-              GoogleMap(
-                initialCameraPosition:
-                    CameraPosition(target: appState.initialPosition, zoom: 18),
-                onMapCreated: appState.onCreated,
-                myLocationEnabled: true,
-                mapType: MapType.normal,
-                markers: appState.markers,
-                onCameraMove: appState.onCameraMove,
-                compassEnabled: true,
-                polylines: {
-                  if (appState.info != null)
-                    Polyline(
-                      polylineId: const PolylineId('overview_polyline'),
-                      color: Colors.red,
-                      width: 5,
-                      points: appState.info.polylinePoints
-                          .map((e) => LatLng(e.latitude, e.longitude))
-                          .toList(),
-                    ),
-                },
-              ),
+
+              LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    return SizedBox(
+                        height: constraints.maxHeight / 1.25,
+                        child: GoogleMap(
+                          initialCameraPosition:
+                          CameraPosition(target: appState.initialPosition, zoom: 18),
+                          onMapCreated: appState.onCreated,
+                          myLocationEnabled: true,
+                          mapType: MapType.normal,
+                          markers: appState.markers,
+                          onCameraMove: appState.onCameraMove,
+                          compassEnabled: true,
+                          polylines: {
+                            if (appState.info != null)
+                              Polyline(
+                                polylineId: const PolylineId('overview_polyline'),
+                                color: Colors.red,
+                                width: 5,
+                                points: appState.info.polylinePoints
+                                    .map((e) => LatLng(e.latitude, e.longitude))
+                                    .toList(),
+                              ),
+                          },
+                        ),
+
+
+                    );
+                  }),
+
               if (appState.info != null)
                 Positioned(
                   top: 15.0,
@@ -156,101 +186,453 @@ class _MapState extends State<Map> {
                     child: Text(
                       '${appState.info.totalDistance}, ${appState.info.totalDuration}',
                       style: const TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white
                       ),
                     ),
                   ),
                 ),
-              Positioned(
-                top: 60.0,
-                right: 15.0,
-                left: 15.0,
-                child: Container(
-                  height: 50.0,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(3.0),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(1.0, 5.0),
-                          blurRadius: 10,
-                          spreadRadius: 3)
-                    ],
-                  ),
-                  child: TextField(
-                    cursorColor: Colors.black,
-                    controller: appState.locationController,
-                    decoration: InputDecoration(
-                      icon: Container(
-                        margin: EdgeInsets.only(left: 20, top: 5),
-                        width: 10,
-                        height: 10,
-                        child: Icon(
-                          Icons.location_on,
-                          color: Colors.black,
-                        ),
-                      ),
-                      hintText: "pick up",
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 120.0,
-                right: 15.0,
-                left: 15.0,
-                child: Container(
-                  height: 50.0,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(3.0),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black87,
-                          offset: Offset(1.0, 0.1),
-                          blurRadius: 1,
-                          spreadRadius: 0.2)
-                    ],
-                  ),
-                  child: TextField(
-                    cursorColor: Colors.black,
-                    controller: appState.destinationController,
-                    textInputAction: TextInputAction.go,
-                    onSubmitted: (value) async {
-                      appState.sendRequest(value);
-                      //get services
-                      dynamic data = await appState.getServices();
-                     String distance = appState.info.totalDistance.substring(0, appState.info.totalDistance.length - 3);
-                     print('------------------------------------------------------------------------------');
-                      print(data);
 
-                      _bottomSheetMore(context, appState, data, double.parse(distance));
-                    },
+              //gradableOneVibilty
 
-                    decoration: InputDecoration(
-                      icon: Container(
-                        margin: EdgeInsets.only(left: 20, top: 5),
-                        width: 10,
-                        height: 10,
-                        child: Icon(
-                          Icons.local_taxi,
-                          color: Colors.black,
-                        ),
-                      ),
-                      hintText: "destination?",
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
-                    ),
-                  ),
-                ),
+              Visibility(
+                visible: appState.dragrableOneVisibilty,
+                  child:  DraggableScrollableSheet(
+                      initialChildSize: appState.dragableHeight,
+                      minChildSize: 0.2,
+                      maxChildSize: 1,
+                      snapSizes: [0.5, 1],
+                      snap: true,
+                      builder: (BuildContext context, scrollSheetController) {
+                        return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey[300],
+                                  blurRadius: 2.0,
+                                  spreadRadius: 0.0,
+                                  offset:  Offset(0, -3), // shadow direction: bottom right
+                                )
+                              ],
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(15.0),
+                                  topRight: Radius.circular(15.0)),
+                              border: Border(
+                                top: BorderSide(width: 1.0, color: Colors.grey[300]),
+                                left: BorderSide(width: 1.0, color: Colors.grey[300]),
+                                right:
+                                BorderSide(width: 1.0, color: Colors.grey[300]),
+                                bottom:
+                                BorderSide(width: 1.0, color: Colors.grey[300]),
+                              ),
+                            ),
+                            child: ListView.builder(
+                              padding: EdgeInsets.zero,
+                              physics: ClampingScrollPhysics(),
+                              controller: scrollSheetController,
+                              itemCount: 1,
+                              itemBuilder: (BuildContext context, int index) {
+
+
+                                return Padding(
+                                    padding: EdgeInsets.only(left: 8.0, top: 1.0,right: 8.0,bottom: 8.0),
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(bottom: 10.0),
+                                          child: SizedBox(
+                                            width: 50,
+                                            child: Divider(
+                                              thickness: 2,
+                                            ),
+                                          ),
+                                        ),
+
+
+
+                                        Visibility(
+                                          visible: appState.topContainerVisibility,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only( top: 0, ),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.only(left: 30.0,  bottom: 10),
+                                                  child: Row(
+
+                                                    children: [
+                                                      Text(
+                                                        'Your Route',
+                                                        style: TextStyle(
+                                                          fontFamily: '',
+                                                          fontSize: 18.0,
+                                                          fontWeight: FontWeight.w500,
+                                                        ),
+                                                      ),
+
+                                                      IconButton(
+                                                        onPressed: (){
+                                                          appState.dragableHeight= 0.2;
+                                                          appState.bottomContainerVisibility = !appState.bottomContainerVisibility;
+                                                          appState.topContainerVisibility= !appState.topContainerVisibility;
+                                                          setState(() {
+                                                          });
+                                                        },
+                                                        icon: Icon(Icons.close,size: 25.0,color: Color(0xffDC143C),),
+                                                      ),
+                                                    ],
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                                  child: SizedBox(
+                                                    width: double.infinity,
+                                                    child: Divider(
+                                                      thickness: 1,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                                  child: TextField(
+                                                    cursorColor: Colors.black,
+                                                    controller: appState.locationController,
+                                                    decoration: InputDecoration(
+                                                      icon: Container(
+                                                        margin: EdgeInsets.only( top: 5),
+                                                        width: 10,
+                                                        height: 10,
+                                                        child: Icon(
+                                                          Icons.location_on,
+                                                          color: Colors.blue,
+                                                        ),
+                                                      ),
+                                                      hintText: "pick up",
+                                                      fillColor: Colors.grey,
+                                                      border:  OutlineInputBorder(
+                                                          borderSide:  BorderSide(color: Colors.teal)
+                                                      ),
+                                                      contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
+                                                    ),
+                                                  ),
+                                                ),
+                                                TextField(
+                                                  cursorColor: Colors.red,
+                                                  controller: appState.destinationController,
+                                                  textInputAction: TextInputAction.go,
+                                                  onSubmitted: (value) async {
+                                                    appState.dragableHeight= 0.2;
+                                                    appState.bottomContainerVisibility = !appState.bottomContainerVisibility;
+                                                    appState.topContainerVisibility= !appState.topContainerVisibility;
+                                                    appState.sendRequest(value);
+                                                    //get services
+                                                    dynamic data = await appState.getServices();
+                                                    String distance = appState.info.totalDistance.substring(0, appState.info.totalDistance.length - 3);
+                                                    _bottomSheetMore(context, appState, data, double.parse(distance));
+                                                  },
+
+                                                  decoration: InputDecoration(
+                                                    fillColor: Colors.grey,
+                                                    icon: Container(
+                                                      width: 10,
+                                                      child: Icon(
+                                                        Icons.search,
+                                                        color: Colors.grey[100],
+                                                      ),
+                                                    ),
+                                                    border:  OutlineInputBorder(
+                                                        borderSide:  BorderSide(color: Colors.teal)
+                                                    ),
+                                                    hintText: "Where to destination?" ,
+                                                    suffixIcon: Icon(Icons.pin_drop_outlined, color: Colors.blue,),
+                                                    contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                        ),
+
+                                        Visibility(
+                                            visible: appState.bottomContainerVisibility,
+                                            child:
+                                            TextField(
+                                              cursorColor: Colors.black,
+                                              controller: appState.destinationController,
+                                              textInputAction: TextInputAction.go,
+                                              onSubmitted: (value) async {
+                                                appState.sendRequest(value);
+                                                //get services
+                                                dynamic data = await appState.getServices();
+                                                String distance = appState.info.totalDistance.substring(0, appState.info.totalDistance.length - 3);
+                                                print('------------------------------------------------------------------------------');
+                                                print(data);
+
+                                                _bottomSheetMore(context, appState, data, double.parse(distance));
+                                              },
+                                              onTap: (){
+                                                appState.dragableHeight = 0.95;
+                                                appState.bottomContainerVisibility = !appState.bottomContainerVisibility;
+                                                appState.topContainerVisibility = !appState.topContainerVisibility;
+                                              },
+
+                                              decoration: InputDecoration(
+                                                fillColor: Colors.grey,
+                                                icon: Container(
+
+                                                  width: 10,
+
+                                                  child: Icon(
+                                                    Icons.search,
+                                                    color: Colors.grey[100],
+                                                  ),
+                                                ),
+                                                border:  OutlineInputBorder(
+                                                    borderSide:  BorderSide(color: Colors.teal)
+                                                ),
+                                                hintText: "Where to destination?" ,
+                                                suffixIcon: Icon(Icons.pin_drop_outlined, color: Colors.blue,),
+
+                                                contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
+                                              ),
+                                            )
+                                        ),
+
+
+                                      ],
+                                    ));
+
+
+                              },
+                            ));
+                      }),
               ),
+              //dragableOneVisibilty end
+
+
+
+
+
+              //gradabletwoVibilty
+
+              Visibility(
+                visible: appState.dragableTwoVibility,
+                child:  DraggableScrollableSheet(
+                    initialChildSize: 0.4,
+                    minChildSize: 0.2,
+                    maxChildSize: 1,
+                    snapSizes: [0.5, 1],
+                    snap: true,
+                    builder: (BuildContext context, scrollSheetController) {
+                      return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey[300],
+                                blurRadius: 2.0,
+                                spreadRadius: 0.0,
+                                offset:  Offset(0, -3), // shadow direction: bottom right
+                              )
+                            ],
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(15.0),
+                                topRight: Radius.circular(15.0)),
+                            border: Border(
+                              top: BorderSide(width: 1.0, color: Colors.grey[300]),
+                              left: BorderSide(width: 1.0, color: Colors.grey[300]),
+                              right:
+                              BorderSide(width: 1.0, color: Colors.grey[300]),
+                              bottom:
+                              BorderSide(width: 1.0, color: Colors.grey[300]),
+                            ),
+                          ),
+                          child: ListView.builder(
+                            padding: EdgeInsets.zero,
+                            physics: ClampingScrollPhysics(),
+                            controller: scrollSheetController,
+                            itemCount: 1,
+                            itemBuilder: (BuildContext context, int index) {
+
+
+                              return Padding(
+                                  padding: EdgeInsets.only(left: 8.0, top: 1.0,right: 8.0,bottom: 8.0),
+                                  child: Column(
+                                    children: [
+
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: 10.0),
+                                        child: SizedBox(
+                                          width: 50,
+                                          child: Divider(
+                                            thickness: 2,
+                                          ),
+                                        ),
+                                      ),
+                                      Text('Request Accepted', style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: "Red Hat Display"
+                                      ),),
+                                      // Generated code for this ListView Widget...
+                                      Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(0, 12, 0, 44),
+                                        child: ListView(
+                                          padding: EdgeInsets.zero,
+                                          primary: false,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                                              child: SizedBox(
+                                                width: double.infinity,
+                                                child: Divider(
+                                                  thickness: 0.3,
+                                                ),
+                                              ),
+                                            ),
+                                             Container(
+                                                width: double.infinity,
+                                                height: 60,
+
+                                                child: Padding(
+                                                  padding: EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.max,
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      ClipRRect(
+                                                        borderRadius: BorderRadius.circular(26),
+                                                        child: Image.network(
+                                                          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fHByb2ZpbGV8ZW58MHx8MHx8&auto=format&fit=crop&w=900&q=60',
+                                                          width: 50,
+                                                          height: 50,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                        child: Padding(
+                                                          padding: EdgeInsetsDirectional.fromSTEB(12, 0, 0, 0),
+                                                          child: Column(
+                                                            mainAxisSize: MainAxisSize.max,
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(
+                                                                'Nkanyiso Ncube',
+                                                                style: FlutterFlowTheme.of(context).bodyText1,
+                                                              ),
+                                                              Row(mainAxisSize: MainAxisSize.max, children: [
+                                                                for (var i = 0; i < 5; i++)
+                                                                  Icon(Icons.star, color: Color(0xffFFD700 ),),
+                                                                Padding(
+                                                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      12, 0, 0, 0),
+                                                                  child: Text(
+                                                                    '5/5 Reviews',
+                                                                    style: FlutterFlowTheme.of(context)
+                                                                        .bodyText2,
+                                                                  ),
+                                                                )
+                                                              ]),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                                              child: SizedBox(
+                                                width: double.infinity,
+                                                child: Divider(
+                                                  thickness: 0.3,
+                                                ),
+                                              ),
+                                            ),
+                                           Container(
+                                                width: double.infinity,
+                                                height: 60,
+                                                child: Padding(
+                                                  padding: EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.max,
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      ClipRRect(
+                                                        borderRadius: BorderRadius.circular(26),
+                                                        child: Image.network(
+                                                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTDv21E5y6ihw1-vHUqdxl6N-JJbcwJF2F6oHuEprlIcevTcy4e12__YH-rN-GkLECDbA&usqp=CAU',
+                                                          width: 50,
+                                                          height: 50,
+                                                          fit: BoxFit.contain,
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                        child: Padding(
+                                                          padding: EdgeInsetsDirectional.fromSTEB(12, 0, 0, 0),
+                                                          child: Column(
+                                                            mainAxisSize: MainAxisSize.max,
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(
+                                                                'Cabgolite',
+                                                                style: FlutterFlowTheme.of(context).bodyText1,
+                                                              ),
+                                                              Row(
+                                                                mainAxisSize: MainAxisSize.max,
+                                                                children: [
+                                                                  Text(
+                                                                    '3 Mins',
+                                                                    style: FlutterFlowTheme.of(context).bodyText2,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        'R 230'
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                                              child: SizedBox(
+                                                width: double.infinity,
+                                                child: Divider(
+                                                  thickness: 0.3,
+                                                ),
+                                              ),
+                                            ),
+
+
+                                          ],
+                                        ),
+                                      )
+
+                                    ],
+                                  ));
+
+
+                            },
+                          ));
+                    }),
+              ),
+              //dragabletwoVisibilty end
               Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [

@@ -89,11 +89,19 @@ class AppState with ChangeNotifier{
   double requestedDestinationLat;
   double requestedDestinationLng;
 
+  //dragable bottom sheet
+  double dragableHeight = 0.2;
+  bool topContainerVisibility = false;
+  bool bottomContainerVisibility = true;
+
+  bool dragrableOneVisibilty = true;
+  bool dragableTwoVibility = false;
+
+
   // //on background handler
   Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     // make sure you call `initializeApp` before using other Firebase services.
     await Firebase.initializeApp();
-
     print("Handling a background message: ${message.messageId}");
   }
 
@@ -130,6 +138,7 @@ class AppState with ChangeNotifier{
       notifications =   PushNotifications(message.data['message'], message.data['requestID']);
       incomeMessage = true;
       notifyListeners();
+
     });
 
   //  on background
@@ -219,16 +228,19 @@ class AppState with ChangeNotifier{
   //user Auth
   // ! SEND REQUEST
   Future<void> passangerLogin() async {
+    try{
     final response = await ApiClient().login(emailAddressController.text,passwordController.text );
-    _addNewItem('access_token', response['access_token']);
-    _addNewItem('refresh_token', response['refresh_token']);
-
-    if(response['access_token'] != null){
+   if(response['access_token'] != null) {
+     _addNewItem('access_token', response['access_token']);
+     _addNewItem('refresh_token', response['refresh_token']);
       _isLoggedIn = true;
-      print('token');
-      print(response['access_token']);
       notifyListeners();
+    }else{
+     throw InvalidCredentials();
+   }
 
+    } on InvalidCredentials{
+      print('Invalid login details');
     }
 
 
