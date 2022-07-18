@@ -94,8 +94,17 @@ class AppState with ChangeNotifier{
   bool topContainerVisibility = false;
   bool bottomContainerVisibility = true;
 
-  bool dragrableOneVisibilty = true;
-  bool dragableTwoVibility = false;
+  bool dragrableOneVisibilty = false;
+  bool dragableTwoVibility = true;
+
+  // chat height
+  double chatHeight = 1.5;
+
+
+  //Errors
+  String loginError;
+  bool isLoading = false;
+
 
 
   // //on background handler
@@ -240,7 +249,8 @@ class AppState with ChangeNotifier{
    }
 
     } on InvalidCredentials{
-      print('Invalid login details');
+
+      loginError = 'Invalid login details';
     }
 
 
@@ -293,7 +303,14 @@ class AppState with ChangeNotifier{
     return data;
 
   }
+  Future<dynamic> getUserDetails() async {
 
+    dynamic data = await ApiClient().getServices(_accessToken);
+    print('test');
+    print(data);
+    return data;
+
+  }
 
   //get services
 
@@ -305,6 +322,10 @@ class AppState with ChangeNotifier{
 
   }
 
+  void changeHeight(double height){
+      chatHeight = height;
+      notifyListeners();
+  }
 
 
 

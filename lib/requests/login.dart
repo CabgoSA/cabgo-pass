@@ -126,6 +126,22 @@ class ApiClient {
   // }
 
 
+// get profile data
+  Future<dynamic> getServices(String accessToken) async {
+    _dio.options.headers['content-Type'] = 'application/json';
+    _dio.options.headers["Authorization"] = accessToken;
+    try {
+      Response response = await _dio.get(
+          dotenv.get('BASE_URL') + 'api/user/details'
+      );
+      print(response);
+      return response.data;
+    } on DioError catch (e) {
+      return e.response.data;
+    }
+  }
+
+
 
 }
 

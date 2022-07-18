@@ -1,4 +1,5 @@
 import 'package:provider/provider.dart';
+import '../requests/login.dart';
 import 'dashboard_page_widget.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
@@ -19,7 +20,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
   bool passwordVisibility;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
-  bool isLoading = false;
+
 
   @override
   void initState() {
@@ -269,27 +270,47 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             ),
                             ElevatedButton(
                               onPressed: () async {
+                                final snackBar = SnackBar(
+                                  content: const Text('In correct logins details'),
+                                  backgroundColor: Colors.red,
+                                  action: SnackBarAction(
+                                    label: 'Try again',
+                                    textColor: Colors.white,
+                                    onPressed: () {
+                                      // Some code to undo the change.
+                                    },
+                                  ),
+                                );
 
-                                if(formKey.currentState.validate()){
-                                  isLoading = true;
-                                  await appState.passangerLogin();
-                                   if(appState.isLoggedIn) {
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            DashboardPageWidget(),
-                                      ),
-                                    );
-                                   }
-                                  isLoading = false;
+                                if(formKey.currentState.validate()) {
+                                  FocusScope.of(context).unfocus();
+                                  appState.isLoading = true;
+                                  try{
+
+                                    await appState.passangerLogin();
+                                    if (appState.isLoggedIn) {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              DashboardPageWidget(),
+                                        ),
+                                      );
+                                    }else{
+                                      appState.isLoading = false;
+                                      setState(() {
+                                      });
+                                      throw InvalidCredentials();
+                                    }
+                                  } on InvalidCredentials catch(e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  }
+
+
 
                                 }
-
-
-
                               },
-                              child: isLoading ?   CircularProgressIndicator(
+                              child: appState.isLoading ?  CircularProgressIndicator(
                                 color: Colors.white,
                               )
                                   : Text( 'Login'),

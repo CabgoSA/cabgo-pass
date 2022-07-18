@@ -9,6 +9,7 @@ import 'package:cabgo/states/app_state.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
 import 'LocationAccessScreen.dart';
+import 'chat_page_widget.dart';
 
 class DashboardPageWidget extends StatefulWidget {
   const DashboardPageWidget({Key key}) : super(key: key);
@@ -474,11 +475,30 @@ class _MapState extends State<Map> {
                                           ),
                                         ),
                                       ),
-                                      Text('Request Accepted', style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: "Red Hat Display"
-                                      ),),
+                                      Row(
+                                        children: [
+                                          Text('Request Accepted', style: TextStyle(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: "Red Hat Display"
+                                          ),
+                                          ),
+                                          IconButton(
+                                          icon: const Icon(Icons.message),
+                                            color: Colors.green,
+                                            tooltip: 'Increase volume by 10',
+                                            onPressed: () async{
+                                              await Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => ChatPageWidget(),
+                                                ),
+                                              );
+                                            },
+                                            ),
+
+                                        ],
+                                      ),
                                       // Generated code for this ListView Widget...
                                       Padding(
                                         padding: EdgeInsetsDirectional.fromSTEB(0, 12, 0, 44),
