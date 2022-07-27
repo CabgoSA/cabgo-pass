@@ -55,7 +55,14 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(26),
-                      child: Image.network(
+
+                      child: (appState.user.picture != null) ? Image.network(
+                        appState.user.picture,
+                        width: 36,
+                        height: 36,
+                        fit: BoxFit.cover,
+                      ):
+                      Image.network(
                         'https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzJ8fHVzZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=900&q=60',
                         width: 36,
                         height: 36,
@@ -71,7 +78,7 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Username',
+                              appState.user.fullName,
                               style: FlutterFlowTheme.of(context)
                                   .bodyText1
                                   .override(
@@ -85,7 +92,7 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                               mainAxisSize: MainAxisSize.max,
                               children: [
                                 Text(
-                                  'user@domainname.com',
+                                  appState.user.email,
                                   style: FlutterFlowTheme.of(context)
                                       .bodyText2
                                       .override(

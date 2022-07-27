@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,14 +12,17 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cabgo/requests/directions_model.dart';
 import 'package:cabgo/requests/google_maps_requests.dart';
+import 'package:google_place/google_place.dart'  hide Location;
 import 'package:uuid/uuid.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cabgo/requests/login.dart';
 import 'package:cabgo/requests/trip_request.dart';
-
+import 'package:cabgo/requests/device_info.dart';
+import '../exceptions/exceptions.dart';
+import '../requests/providerDetails.dart';
 import '../requests/push_notifications.dart';
+import '../requests/user.dart';
 
 class AppState with ChangeNotifier{
 
@@ -23,6 +30,8 @@ class AppState with ChangeNotifier{
   static LatLng _initialPosition;
   LatLng destination;
   LatLng _lastPosition = _initialPosition;
+  LatLng placeA;
+  LatLng placeB;
   final Set<Polyline> _polyLines = {};
   final Set<Marker> _markers = {};
   String _accessToken;
@@ -31,12 +40,24 @@ class AppState with ChangeNotifier{
   var uuid = Uuid();
   bool locationServiceActive = true;
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
   GoogleMapsServices _googleMapsServices = GoogleMapsServices();
-  TextEditingController locationController = TextEditingController();
+
+  TextEditingController startController = TextEditingController();
   TextEditingController destinationController = TextEditingController();
 
+  DetailsResult startPosition;
+  DetailsResult endPosition;
+
+   FocusNode startFocusNode;
+   FocusNode endFocusNode;
+
+  GooglePlace googlePlace;
+  List<AutocompletePrediction> predictions = [];
+
+
   //LOGIN CONTOLLER
- TextEditingController emailAddressController = TextEditingController();
+ TextEditingController emailController = TextEditingController();
  TextEditingController passwordController = TextEditingController();
 
  //REGISTER CONTROLLER
@@ -48,11 +69,35 @@ class AppState with ChangeNotifier{
   TextEditingController registerPasswordController = TextEditingController();
   TextEditingController registerConfirmPasswordController = TextEditingController();
 
+  //verify
+  TextEditingController textController1 = TextEditingController();
+  TextEditingController textController2 = TextEditingController();
+  TextEditingController textController3 = TextEditingController();
+  TextEditingController textController4 = TextEditingController();
+  // TextEditingController textController5 = TextEditingController();
+
+  //user phone
+  String userRegisterPhone;
+
+  User user;
+
+  //reset password
+  TextEditingController resetPhoneNumber = TextEditingController();
+
+  //new password
+  TextEditingController newPassword = TextEditingController();
+  TextEditingController newPasswordConfirm = TextEditingController();
+
  //local storage
   final _storage = const FlutterSecureStorage();
   AndroidOptions _getAndroidOptions() => const AndroidOptions(
     encryptedSharedPreferences: true,
   );
+
+  //  device information
+   String _fcmToken;
+  String _deviceType;
+  String _deviceID;
 
 
 
@@ -60,7 +105,7 @@ class AppState with ChangeNotifier{
     accuracy: LocationAccuracy.high,
     distanceFilter: 100,
   );
-
+  ProviderDetails providerDetails;
   GeoCode _geoCode = GeoCode();
   bool incomeMessage = false;
   bool _isOnline = false;
@@ -94,13 +139,21 @@ class AppState with ChangeNotifier{
   bool topContainerVisibility = false;
   bool bottomContainerVisibility = true;
 
-  bool dragrableOneVisibilty = false;
-  bool dragableTwoVibility = true;
+  bool dragrableOneVisibilty = true;
+  bool dragableTwoVibility = false;
 
   // chat height
   double chatHeight = 1.5;
 
+  int _selectedService;
 
+  dynamic services;
+
+
+  int get selectedService => _selectedService;
+
+  String estimateImage;
+  String estimatePrice;
   //Errors
   String loginError;
   bool isLoading = false;
@@ -111,7 +164,7 @@ class AppState with ChangeNotifier{
   Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     // make sure you call `initializeApp` before using other Firebase services.
     await Firebase.initializeApp();
-    print("Handling a background message: ${message.messageId}");
+    print("Handling a background message: ${message}");
   }
 
   AppState(){
@@ -119,7 +172,11 @@ class AppState with ChangeNotifier{
     _loadingInitialPosition();
     _getTokens();
     _registerNotification();
+    _getDeviceData();
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    googlePlace = GooglePlace(dotenv.get('API_KEY'));
+    startFocusNode = FocusNode();
+    endFocusNode = FocusNode();
   }
 
 
@@ -136,17 +193,35 @@ class AppState with ChangeNotifier{
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permision ');
-      final fcmToken = await FirebaseMessaging.instance.getToken();
-      print('Your token : $fcmToken');
+      _fcmToken = await FirebaseMessaging.instance.getToken();
 
     }
 
     //on foregroud
-    FirebaseMessaging.onMessage.listen((RemoteMessage message)  {
-      notifications =   PushNotifications(message.data['message'], message.data['requestID']);
-      incomeMessage = true;
-      notifyListeners();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message)  async{
+
+      Response data =  await ApiClient().fetchRideDetails(message.data['requestID'], _accessToken);
+      Map<String, dynamic> rideData = jsonDecode(data.toString());
+
+      if(rideData != null) {
+        //create notification
+        notifications = PushNotifications(
+            message.data['message'], message.data['requestID']);
+
+        providerDetails = ProviderDetails(
+          fullName: rideData['provider']['first_name'] + ' ' +
+              rideData['provider']['last_name'],
+          picture: rideData['provider']['avatar'],
+          rating: rideData['provider']['rating'],
+          price: (double.parse(rideData['service_type']['price']) * double.parse(rideData['distance'])).toString(),
+          serviceImage: rideData['service_type']['image'],
+          serviceName: rideData['service_type']['name'],
+        );
+
+        incomeMessage = true;
+        notifyListeners();
+        print(providerDetails);
+      }
 
     });
 
@@ -154,12 +229,56 @@ class AppState with ChangeNotifier{
 
   }
 
-//  get user Location of Device
-  void _getUserLocation() async {
-    Position position = await Geolocator.getCurrentPosition( desiredAccuracy: LocationAccuracy.high);
-    List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
-    _initialPosition = LatLng(position.latitude, position.longitude);
-    locationController.text = placemarks[0].street + " "+placemarks[0].locality;
+  void autoCompleteSearch(String value) async {
+    var result = await googlePlace.autocomplete.get(value);
+    if (result != null && result.predictions != null ) {
+      print(result.predictions.first.description);
+        predictions = result.predictions;
+        notifyListeners();
+    }
+  }
+
+ void setService(int serviceID){
+    _selectedService = serviceID;
+    estimateImage = services[_selectedService-1]['image'];
+    estimatePrice = (double.parse(services[_selectedService-1]['price']) * double.parse(_info.totalDistance.substring(0,_info.totalDistance.length - 3))).toString();
+  }
+
+  Future<void> _getUserLocation() async {
+    //start
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    try {
+      if (!serviceEnabled) {
+        throw LocationServiceDisabled();
+      }
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw LocationServiceDenied();
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        // Permissions are denied forever, handle appropriately.
+        throw LocationDeniedForever();
+      }
+      // When we reach here, permissions are granted and we can
+      // continue accessing the position of the device.
+      Geolocator.getPositionStream(locationSettings: locationSettings).listen(
+              (Position position) {
+            _initialPosition = LatLng(position.latitude, position.longitude);
+
+          });
+    }catch(e){
+      throw GeneralError();
+    }
+
     notifyListeners();
   }
 
@@ -167,6 +286,21 @@ class AppState with ChangeNotifier{
   void _getTokens() async{
      _accessToken =  await readSecureData('access_token');
      _refreshToken =  await readSecureData('refresh_token');
+  }
+
+  //device info
+  void _getDeviceData() async{
+
+    try {
+      await DeviceInfo.getDeviceDetails().then((value) {
+        _deviceID = value[0];
+        _deviceType = value[1];
+      });
+
+    }catch(e){
+      throw DeviceInfoError();
+    }
+
   }
 
 
@@ -190,20 +324,27 @@ class AppState with ChangeNotifier{
   }
 
 // ! SEND REQUEST
-  void sendRequest(String intendedLocation) async {
-    List<Location> placemark = await locationFromAddress(intendedLocation,localeIdentifier: 'en');
-    double latitude = placemark[0].latitude;
-    double longitude = placemark[0].longitude;
-    destination = LatLng(latitude, longitude);
-    _addMarker(destination, intendedLocation);
+  Future<void> sendRequest() async {
+
+    if(startPosition != null){
+      placeA = LatLng(startPosition.geometry.location.lat, startPosition.geometry.location.lng);
+    }else{
+      placeA = LatLng(_initialPosition.latitude, _initialPosition.longitude);
+    }
+
+    placeB = LatLng(endPosition.geometry.location.lat, endPosition.geometry.location.lng);
+
+    _addMarker(LatLng(placeA.latitude,placeA.latitude), 'Start position' );
+    _addMarker(LatLng(endPosition.geometry.location.lat,endPosition.geometry.location.lng), endPosition.adrAddress );
+
     final directions = await GoogleMapsServices()
-        .getDirections(origin: _initialPosition, destination: destination,);
+        .getDirections(origin: placeA, destination: placeB);
           _info = directions;
     mapController.animateCamera(
     _info != null
     ? CameraUpdate.newLatLngBounds(_info.bounds, 100.0)
         : CameraUpdate.newCameraPosition(CameraPosition(
-      target: _initialPosition,
+      target: placeA,
       zoom: 11.5,
     )),
     );
@@ -223,6 +364,10 @@ class AppState with ChangeNotifier{
       notifyListeners();
   }
 
+
+
+
+
   //  LOADING INITIAL POSITION
   void _loadingInitialPosition()async{
     await Future.delayed(Duration(seconds: 5)).then((v) {
@@ -238,35 +383,87 @@ class AppState with ChangeNotifier{
   // ! SEND REQUEST
   Future<void> passangerLogin() async {
     try{
-    final response = await ApiClient().login(emailAddressController.text,passwordController.text );
-   if(response['access_token'] != null) {
-     _addNewItem('access_token', response['access_token']);
-     _addNewItem('refresh_token', response['refresh_token']);
-      _isLoggedIn = true;
-      notifyListeners();
-    }else{
-     throw InvalidCredentials();
-   }
+    final response = await ApiClient().login(emailController.text,passwordController.text,_fcmToken, _deviceID,);
 
+           //_addNewItem('access_token', response['access_token']);
+           _accessToken = response['access_token'];
+           await getUserDetails();
+
+
+           dynamic data =  await ApiClient().getUser(_accessToken);
+           user = User(fullName: data['first_name']+ ' '+data['last_name'],
+                       phone: data['mobile'], email: data['email'],
+                       picture: data['picture'], rating: data['rating']);
+            _isLoggedIn = true;
+           await ApiClient().setFcmToken(_accessToken, _fcmToken);
+           notifyListeners();
     } on InvalidCredentials{
 
-      loginError = 'Invalid login details';
+      return 'Invalid_login_details';
     }
 
 
     }
+
 
   // ! SEND REQUEST
 
-  void passangerRegister({@required String email, @required String firstName, @required String lastName, @required String phone, @required String password, }) async {
+  Future<void> register() async {
 
-    final response = await ApiClient().registerUser(registerEmailController.value.text,
-                                                    registerFirstNameController.value.text,
-                                                    registerLastNameController.value.text,
-                                                    registerPhoneController.value.text,
-                                                    registerPhoneController.value.text,
-                                                      );
+    try {
+      dynamic response = await ApiClient().registerUser(email: registerEmailController.value.text,
+        firstName: registerFirstNameController.value.text,
+        lastName: registerLastNameController.value.text,
+        phone: registerPhoneController.value.text,
+        password: registerPasswordController.value.text,
+        passwordConfirmation: registerConfirmPasswordController.value.text,
+        deviceToken: _fcmToken,
+        deviceId: _deviceID,
+        deviceType: _deviceType,
+      );
 
+      //create User
+      userRegisterPhone = response['mobile'];
+      notifyListeners();
+    }catch(e){
+      print(e);
+      throw UserRegistrationError();
+    }
+
+  }
+
+  Future<void> verifyOtp() async {
+    try {
+      String otpCode = textController1.text;
+             otpCode += textController2.text;
+            otpCode += textController3.text;
+            otpCode += textController4.text;
+
+      dynamic response = await ApiClient().verifyOtp(
+        userRegisterPhone,
+        otpCode,
+      );
+
+    }catch(e){
+      throw OtpVerificationError();
+    }
+
+
+  }
+
+  Future<void> requestResetOtp() async {
+    try {
+       await ApiClient().requestResetOtp(resetPhoneNumber.text);
+
+    } on ResetPasswordError catch(e){
+      throw ResetPasswordError();
+    }
+  }
+
+  Future<dynamic> passwordReset() async {
+
+    dynamic data =  await ApiClient().passwordReset(resetPhoneNumber.text, newPassword.text, newPasswordConfirm.text);
+    return data;
   }
 
 
@@ -295,30 +492,41 @@ class AppState with ChangeNotifier{
 
   //get services
 
-  Future<dynamic> getServices() async {
-
-    dynamic data = await TripRequest().getServices();
-    print('test');
-    print(data);
-    return data;
-
+  Future<void> getServices() async {
+      try {
+        services  = await TripRequest().getServices(_accessToken);
+      }catch(e){
+       throw ErrorGettingServices();
+      }
   }
+
+
   Future<dynamic> getUserDetails() async {
+  try {
+    dynamic data = await ApiClient().getUser(_accessToken);
 
-    dynamic data = await ApiClient().getServices(_accessToken);
-    print('test');
-    print(data);
     return data;
-
+  } on ErrorGettingUser {
+    throw ErrorGettingUser();
+    } catch(e){
+    throw GeneralError();
+  }
   }
 
   //get services
 
-  Future<dynamic> sendTripRequest(int type, double distance) async {
+  Future<dynamic> sendTripRequest() async {
+  try {
 
-    dynamic data = await TripRequest().sendRequest(_initialPosition, destination , type, distance, );
+    dynamic data = await TripRequest().sendRequest(
+      _accessToken,placeA, placeB, _selectedService, double.parse(_info.totalDistance.substring(0,_info.totalDistance.length - 3)),);
+
 
     return data;
+  }catch(e){
+    print(e);
+      throw ErrorTripRequest();
+  }
 
   }
 

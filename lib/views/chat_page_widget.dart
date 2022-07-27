@@ -111,7 +111,7 @@ class _ChatPageWidgetState extends State<ChatPageWidget> {
               child: Column(
                 children: [
                   Text(
-                    'Nkanyiso Ncube',
+                    appState.providerDetails.fullName,
                     style: FlutterFlowTheme.of(context).title2.override(
                           fontFamily: 'Red Hat Display',
                           color: Colors.white,

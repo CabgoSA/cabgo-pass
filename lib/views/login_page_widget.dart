@@ -1,4 +1,5 @@
 import 'package:provider/provider.dart';
+import '../exceptions/exceptions.dart';
 import '../requests/login.dart';
 import 'dashboard_page_widget.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
@@ -82,10 +83,10 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                           children: [
                             Expanded(
                               child: TextFormField(
-                                controller: appState.emailAddressController,
+                                controller: appState.emailController,
                                 obscureText: false,
                                 decoration: InputDecoration(
-                                  labelText: 'Email Address',
+                                  labelText: 'Email address ',
                                   labelStyle: FlutterFlowTheme.of(context)
                                       .bodyText1
                                       .override(
@@ -133,13 +134,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
                                     ),
-                                validator: (value){
-                                  if(value != null && value.length <7 || !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value) ){
-                                    return "Enter valid email";
-                                  }else{
-                                    return null;
-                                  }
-                                },
+
                                 keyboardType: TextInputType.emailAddress,
                               ),
                             ),
@@ -220,7 +215,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                     ),
                                 validator: (value){
                                   if(value != null && value.length <4 ){
-                                    return "Enter valid pasword";
+                                    return "Enter valid password";
                                   }else{
                                     return null;
                                   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cabgo/views/components/side_nav_widget.dart';
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
@@ -8,8 +10,9 @@ import 'package:provider/provider.dart';
 import 'package:cabgo/states/app_state.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
-import 'LocationAccessScreen.dart';
+import '../states/app_state.dart';
 import 'chat_page_widget.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 class DashboardPageWidget extends StatefulWidget {
   const DashboardPageWidget({Key key}) : super(key: key);
@@ -33,12 +36,6 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
         });
 
     }
-
-
-
-
-
-
 
     return Scaffold(
       key: scaffoldKey,
@@ -92,13 +89,37 @@ class Map extends StatefulWidget {
 }
 
 class _MapState extends State<Map> {
+
   @override
   void initState() {
     super.initState();
   }
 
+  Timer _debounce;
+
+
+
+
   @override
   Widget build(BuildContext context) {
+    ProgressDialog loading = ProgressDialog(context);
+    loading = ProgressDialog(context,type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+
+
+    loading.style(
+        message: 'Loading....please wait.',
+        borderRadius: 10.0,
+        backgroundColor: Colors.white,
+        progressWidget: CircularProgressIndicator( valueColor: AlwaysStoppedAnimation<Color>(Colors.black), strokeWidth: 2,),
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        progress: 0.0,
+        maxProgress: 100.0,
+        progressTextStyle: TextStyle(
+            color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+        messageTextStyle: TextStyle(
+            color: Colors.black, fontSize: 14.0, fontWeight: FontWeight.w600)
+    );
     final appState = Provider.of<AppState>(context);
     return appState.initialPosition == null
         ? Container(
@@ -301,7 +322,10 @@ class _MapState extends State<Map> {
                                                   padding: const EdgeInsets.only(bottom: 8.0),
                                                   child: TextField(
                                                     cursorColor: Colors.black,
-                                                    controller: appState.locationController,
+                                                    controller: appState.startController,
+                                                    autofocus: false,
+                                                    focusNode: appState.startFocusNode,
+
                                                     decoration: InputDecoration(
                                                       icon: Container(
                                                         margin: EdgeInsets.only( top: 5),
@@ -318,7 +342,33 @@ class _MapState extends State<Map> {
                                                           borderSide:  BorderSide(color: Colors.teal)
                                                       ),
                                                       contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
+                                                        suffixIcon: appState.startController.text.isNotEmpty
+                                                            ? IconButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              appState.predictions = [];
+                                                              appState.startController.clear();
+                                                            });
+                                                          },
+                                                          icon: Icon(Icons.clear_outlined),
+                                                        )
+                                                            : null,
                                                     ),
+                                                    onChanged: (value) {
+                                                      if (_debounce?.isActive ?? false) _debounce.cancel();
+                                                      _debounce = Timer(const Duration(milliseconds: 1000), () {
+                                                        if (value.isNotEmpty) {
+                                                          //places api
+                                                          appState.autoCompleteSearch(value);
+                                                        } else {
+                                                          //clear out the results
+                                                          setState(() {
+                                                            appState.predictions = [];
+                                                            appState.startPosition = null;
+                                                          });
+                                                        }
+                                                      });
+                                                    },
                                                   ),
                                                 ),
                                                 TextField(
@@ -329,11 +379,42 @@ class _MapState extends State<Map> {
                                                     appState.dragableHeight= 0.2;
                                                     appState.bottomContainerVisibility = !appState.bottomContainerVisibility;
                                                     appState.topContainerVisibility= !appState.topContainerVisibility;
-                                                    appState.sendRequest(value);
-                                                    //get services
-                                                    dynamic data = await appState.getServices();
-                                                    String distance = appState.info.totalDistance.substring(0, appState.info.totalDistance.length - 3);
-                                                    _bottomSheetMore(context, appState, data, double.parse(distance));
+                                                    loading.show();
+                                                    try {
+                                                      await appState
+                                                          .sendRequest();
+                                                      //get services
+                                                      await appState
+                                                          .getServices();
+                                                      String distance = appState
+                                                          .info.totalDistance
+                                                          .substring(0,
+                                                          appState.info
+                                                              .totalDistance
+                                                              .length - 3);
+                                                      loading.hide();
+                                                      _bottomSheetMore(
+                                                          context, appState, double.parse(
+                                                          distance),loading);
+
+
+                                                    }catch(e){
+                                                      loading.hide();
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                          SnackBar(
+                                                            content: const Text('Problems in placing request'),
+                                                            backgroundColor: Colors.red,
+                                                            action: SnackBarAction(
+                                                              label: 'Try again',
+                                                              textColor: Colors.white,
+                                                              onPressed: () {
+                                                                // Some code to undo the change.
+                                                              },
+                                                            ),
+                                                          )
+                                                      );
+                                                    }
+
                                                   },
 
                                                   decoration: InputDecoration(
@@ -348,17 +429,92 @@ class _MapState extends State<Map> {
                                                     border:  OutlineInputBorder(
                                                         borderSide:  BorderSide(color: Colors.teal)
                                                     ),
-                                                    hintText: "Where to destination?" ,
-                                                    suffixIcon: Icon(Icons.pin_drop_outlined, color: Colors.blue,),
+                                                    hintText: "Where to destination? " ,
+                                                    suffixIcon: appState.destinationController.text.isNotEmpty
+                                                        ? IconButton(
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          appState.predictions = [];
+                                                          appState.destinationController.clear();
+                                                        });
+                                                      },
+                                                      icon: Icon(Icons.clear_outlined),
+                                                    )
+                                                        : null,
                                                     contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
                                                   ),
+                                                  onChanged: (value) {
+                                                    if (_debounce?.isActive ?? false) _debounce.cancel();
+                                                    _debounce = Timer(const Duration(milliseconds: 1000), () {
+                                                      if (value.isNotEmpty) {
+                                                        //places api
+                                                        appState.autoCompleteSearch(value);
+                                                      } else {
+                                                        //clear out the results
+                                                        setState(() {
+                                                          appState.predictions = [];
+                                                          appState.endPosition = null;
+                                                        });
+                                                      }
+                                                    });
+                                                  },
                                                 ),
+
+                                                ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount: appState.predictions.length,
+                                                    itemBuilder: (context, index) {
+                                                      return ListTile(
+                                                        leading: CircleAvatar(
+                                                          child: Icon(
+                                                            Icons.pin_drop,
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                        title: Text(
+                                                          appState.predictions[index].description.toString(),
+                                                        ),
+                                                        onTap: () async {
+                                                          final placeId = appState.predictions[index].placeId;
+                                                          final details = await appState.googlePlace.details.get(placeId);
+                                                          if (details != null &&
+                                                              details.result != null &&
+                                                              mounted) {
+                                                            if (appState.startFocusNode.hasFocus) {
+                                                              setState(() {
+                                                                appState.startPosition = details.result;
+                                                                appState.startController.text =
+                                                                details.result.name;
+                                                                appState.predictions = [];
+                                                              });
+                                                            } else {
+                                                              setState(() {
+                                                                appState.endPosition = details.result;
+                                                                appState.destinationController.text = details.result.name;
+                                                                appState.predictions = [];
+                                                              });
+                                                            }
+                                                            //
+                                                            // if (appState.startPosition != null && appState.endPosition != null) {
+                                                            //   print('navigate');
+                                                            //   Navigator.push(
+                                                            //     context,
+                                                            //     MaterialPageRoute(
+                                                            //       builder: (context) => MapScreen(),
+                                                            //     ),
+                                                            //   );
+                                                            // }
+                                                          }
+                                                        },
+                                                      );
+                                                    })
                                               ],
                                             ),
                                           ),
 
                                         ),
 
+                                        //first search input
                                         Visibility(
                                             visible: appState.bottomContainerVisibility,
                                             child:
@@ -366,16 +522,7 @@ class _MapState extends State<Map> {
                                               cursorColor: Colors.black,
                                               controller: appState.destinationController,
                                               textInputAction: TextInputAction.go,
-                                              onSubmitted: (value) async {
-                                                appState.sendRequest(value);
-                                                //get services
-                                                dynamic data = await appState.getServices();
-                                                String distance = appState.info.totalDistance.substring(0, appState.info.totalDistance.length - 3);
-                                                print('------------------------------------------------------------------------------');
-                                                print(data);
 
-                                                _bottomSheetMore(context, appState, data, double.parse(distance));
-                                              },
                                               onTap: (){
                                                 appState.dragableHeight = 0.95;
                                                 appState.bottomContainerVisibility = !appState.bottomContainerVisibility;
@@ -396,7 +543,7 @@ class _MapState extends State<Map> {
                                                 border:  OutlineInputBorder(
                                                     borderSide:  BorderSide(color: Colors.teal)
                                                 ),
-                                                hintText: "Where to destination?" ,
+                                                hintText: "Where to destination 111?" ,
                                                 suffixIcon: Icon(Icons.pin_drop_outlined, color: Colors.blue,),
 
                                                 contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
@@ -530,7 +677,7 @@ class _MapState extends State<Map> {
                                                       ClipRRect(
                                                         borderRadius: BorderRadius.circular(26),
                                                         child: Image.network(
-                                                          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fHByb2ZpbGV8ZW58MHx8MHx8&auto=format&fit=crop&w=900&q=60',
+                                                         appState.providerDetails.picture,
                                                           width: 50,
                                                           height: 50,
                                                           fit: BoxFit.cover,
@@ -545,7 +692,7 @@ class _MapState extends State<Map> {
                                                             crossAxisAlignment: CrossAxisAlignment.start,
                                                             children: [
                                                               Text(
-                                                                'Nkanyiso Ncube',
+                                                                appState.providerDetails.fullName,
                                                                 style: FlutterFlowTheme.of(context).bodyText1,
                                                               ),
                                                               Row(mainAxisSize: MainAxisSize.max, children: [
@@ -555,7 +702,7 @@ class _MapState extends State<Map> {
                                                                   padding: EdgeInsetsDirectional.fromSTEB(
                                                                       12, 0, 0, 0),
                                                                   child: Text(
-                                                                    '5/5 Reviews',
+                                                                    appState.providerDetails.rating,
                                                                     style: FlutterFlowTheme.of(context)
                                                                         .bodyText2,
                                                                   ),
@@ -591,7 +738,7 @@ class _MapState extends State<Map> {
                                                       ClipRRect(
                                                         borderRadius: BorderRadius.circular(26),
                                                         child: Image.network(
-                                                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTDv21E5y6ihw1-vHUqdxl6N-JJbcwJF2F6oHuEprlIcevTcy4e12__YH-rN-GkLECDbA&usqp=CAU',
+                                                          appState.providerDetails.serviceImage,
                                                           width: 50,
                                                           height: 50,
                                                           fit: BoxFit.contain,
@@ -606,7 +753,7 @@ class _MapState extends State<Map> {
                                                             crossAxisAlignment: CrossAxisAlignment.start,
                                                             children: [
                                                               Text(
-                                                                'Cabgolite',
+                                                                appState.providerDetails.serviceName,
                                                                 style: FlutterFlowTheme.of(context).bodyText1,
                                                               ),
                                                               Row(
@@ -623,7 +770,7 @@ class _MapState extends State<Map> {
                                                         ),
                                                       ),
                                                       Text(
-                                                        'R 230'
+                                                        'R'+appState.providerDetails.price
                                                       )
                                                     ],
                                                   ),
@@ -693,7 +840,7 @@ class _MapState extends State<Map> {
   }
 
 //bottomsheet start
-  void _bottomSheetMore(context, appState,  dynamic services, double distance) {
+  void _bottomSheetMore(context, appState, double distance, ProgressDialog loading ) {
 
     showModalBottomSheet(
       context: context,
@@ -728,60 +875,65 @@ class _MapState extends State<Map> {
                   //services here!!!!!
 
                   children: [
-                  for (var service in services)
+                  for (var service in appState.services)
 
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
+                    GestureDetector(
+                      onTap: () {
+                        appState.setService(service['id']);
+                      },
+                      child: Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
 
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 5),
-                            child: Text(
-                                'R' + (distance * double.parse(service['price'])).toString(), // estimated price of ride
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyText1
-                                  .override(
-                                    fontFamily: 'Red Hat Display',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w300,
-                                  ),
+                            Padding(
+                              padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 5),
+                              child: Text(
+                                  'R' + (distance * double.parse(service['price'])).toString(), // estimated price of ride
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyText1
+                                    .override(
+                                      fontFamily: 'Red Hat Display',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                              ),
                             ),
-                          ),
-                          Image.network(
-                            service['image'],
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.contain,
-                          ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
-                            child: Text(
-                              service['capacity'],
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyText1
-                                  .override(
-                                    fontFamily: 'Red Hat Display',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w300,
-                                  ),
+                            Image.network(
+                              service['image'],
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.contain,
                             ),
-                          ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
-                            child: Text(
-                              service['name'],
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyText1
-                                  .override(
-                                    fontFamily: 'Red Hat Display',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                            Padding(
+                              padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
+                              child: Text(
+                                service['capacity'],
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyText1
+                                    .override(
+                                      fontFamily: 'Red Hat Display',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                              ),
                             ),
-                          ),
-                        ],
+                            Padding(
+                              padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
+                              child: Text(
+                                service['name'],
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyText1
+                                    .override(
+                                      fontFamily: 'Red Hat Display',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ), // 1
                   ],
@@ -790,33 +942,35 @@ class _MapState extends State<Map> {
                 ),
               ),
 
-
-              //services procced  here
-              Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF169F49),
-                  ),
-                  alignment: AlignmentDirectional(-0.09999999999999998, 0),
-                  child: InkWell(
-                    onTap: () async{
-                      await appState.sendTripRequest(1 , distance);
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: TextButton(
+                  onPressed:  () async{
+                    try {
                       Navigator.pop(context);
                       _bottomSheetPay(context, appState,);
-                    },
-                   child: Text(
-                      'PROCEED',
-                      style: FlutterFlowTheme.of(context).bodyText1.override(
-                        fontFamily: 'Red Hat Display',
-                        color: Colors.white,
-                      ),
-                    ),
+                    }catch(e){
+
+                    }
+
+                  },
+
+                  child: Text('PROCEED',
+                  style: TextStyle(
+                    color: Colors.white
+                  ),
+                  ),
+
+                  style: ButtonStyle(
+                    backgroundColor:  MaterialStateProperty.all(Color(0xFF169F49))
+
                   ),
                 ),
               ),
+
+              //services procced  here
+
 
 
             ],
@@ -875,8 +1029,8 @@ class _MapState extends State<Map> {
                     padding: EdgeInsetsDirectional.fromSTEB(0, 15, 0, 0),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(50),
-                      child: Image.asset(
-                        'assets/images/Xpress.png',
+                      child: Image.network(
+                        appState.estimateImage,
                         width: 40,
                         height: 40,
                         fit: BoxFit.cover,
@@ -886,7 +1040,7 @@ class _MapState extends State<Map> {
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 15, 0, 0),
                     child: Text(
-                      'R401.00',
+                      'R'+appState.estimatePrice,
                       style: FlutterFlowTheme.of(context).bodyText1,
                     ),
                   ),
@@ -901,11 +1055,6 @@ class _MapState extends State<Map> {
                     Column(
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        Text(
-                          'Caupon',
-                          textAlign: TextAlign.start,
-                          style: FlutterFlowTheme.of(context).bodyText1,
-                        ),
                         Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(0, 15, 0, 0),
                           child: Text(
@@ -918,10 +1067,7 @@ class _MapState extends State<Map> {
                     Column(
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        Text(
-                          'View Coupons ',
-                          style: FlutterFlowTheme.of(context).bodyText1,
-                        ),
+
                         Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(0, 15, 0, 0),
                           child: Text(
@@ -943,14 +1089,13 @@ class _MapState extends State<Map> {
                     Padding(
                       padding: EdgeInsetsDirectional.fromSTEB(10, 0, 0, 0),
                       child: FFButtonWidget(
-                        onPressed: () {
-                           Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  LocationAccessScreen(),
-                            ),
-                          );
+                        onPressed: () async{
+
+                           try{
+                             await appState.sendTripRequest();
+                           }catch(e){
+
+                           }
                         },
                         text: 'RIDE NOW',
                         options: FFButtonOptions(

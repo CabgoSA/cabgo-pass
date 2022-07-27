@@ -1,10 +1,14 @@
 import 'dart:ui';
 
+import 'package:cabgo/exceptions/exceptions.dart';
+import 'package:provider/provider.dart';
+
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../states/app_state.dart';
 import './register_page_widget.dart';
 import './login_page_widget.dart';
 import './otp_verification.dart';
@@ -21,6 +25,7 @@ class _ResetPasswordWidgetState extends State<ResetPasswordWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -66,7 +71,7 @@ class _ResetPasswordWidgetState extends State<ResetPasswordWidget> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                      Text(
-                         'Enter your cellphone number you used for regitering',
+                         'Enter your cellphone number you used for registering',
                        style: TextStyle(
                          fontSize: 14,
                          color: Color(0xff0F0F0F),
@@ -78,6 +83,7 @@ class _ResetPasswordWidgetState extends State<ResetPasswordWidget> {
                       Padding(
                         padding: const EdgeInsets.only(top: 50.0),
                         child: TextField(
+                          controller: appState.resetPhoneNumber,
                           keyboardType: TextInputType.phone,
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
@@ -94,7 +100,8 @@ class _ResetPasswordWidgetState extends State<ResetPasswordWidget> {
                                     padding: const EdgeInsets.only(left: 4.0, right: 4.0),
                                     child: Row(
                                       children: [
-                                        Text('+27', style: TextStyle(color: Colors.white),),
+                                        Text(
+                                          '+27', style: TextStyle(color: Colors.white),),
                                         Icon(
                                             Icons.keyboard_arrow_down,
                                             color: Colors.white,
@@ -125,12 +132,32 @@ class _ResetPasswordWidgetState extends State<ResetPasswordWidget> {
                         padding: const EdgeInsets.only(top: 50.0),
                         child: TextButton(
                             onPressed: () async {
-                        await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                        builder: (context) => OtpVerificationWidget(),
-                        ),
-                        );
+                                      try {
+                                      await appState.requestResetOtp();
+                                      await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                      builder: (context) =>
+                                      OtpVerificationWidget(),
+                                      ),
+                                      );
+                                  }on ResetPasswordError {
+                                   ScaffoldMessenger.of(context).showSnackBar(
+                                       SnackBar(
+                                         content: const Text('Incorect phone number'),
+                                         backgroundColor: Colors.red,
+                                         action: SnackBarAction(
+                                           label: 'Try again',
+                                           textColor: Colors.white,
+                                           onPressed: () {
+                                             // Some code to undo the change.
+                                           },
+                                         ),
+                                       )
+                                   );
+                              }catch(e){
+
+                              }
                         },
                             child: Padding(
                               padding: const EdgeInsets.only(left: 50.0, right: 50, top: 6.0, bottom: 6.0),

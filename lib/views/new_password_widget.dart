@@ -1,8 +1,12 @@
 import 'dart:ui';
+import 'package:provider/provider.dart';
+
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
+import '../states/app_state.dart';
 import './otp_verification.dart';
+import 'login_page_widget.dart';
 
 class NewPasswordWidget extends StatefulWidget {
   const NewPasswordWidget({Key key}) : super(key: key);
@@ -16,6 +20,7 @@ class _NewPasswordWidgetState extends State<NewPasswordWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -73,6 +78,7 @@ class _NewPasswordWidgetState extends State<NewPasswordWidget> {
                       Padding(
                         padding: const EdgeInsets.only(top: 30.0),
                         child: TextField(
+                          controller: appState.newPassword,
                           keyboardType: TextInputType.visiblePassword,
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
@@ -96,6 +102,7 @@ class _NewPasswordWidgetState extends State<NewPasswordWidget> {
                       Padding(
                         padding: const EdgeInsets.only(top: 30.0),
                         child: TextField(
+                          controller: appState.newPasswordConfirm,
                           keyboardType: TextInputType.visiblePassword,
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
@@ -121,12 +128,17 @@ class _NewPasswordWidgetState extends State<NewPasswordWidget> {
                         padding: const EdgeInsets.only(top: 30.0),
                         child: TextButton(
                             onPressed: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => OtpVerificationWidget(),
-                                ),
-                              );
+                              try {
+                                await appState.passwordReset();
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginPageWidget(),
+                                  ),
+                                );
+                              }catch(e){
+                                print(e);
+                              }
                             },
                             child: Padding(
                               padding: const EdgeInsets.only(left: 50.0, right: 50, top: 6.0, bottom: 6.0),

@@ -1,9 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
+import '../states/app_state.dart';
 import './login_page_widget.dart';
 import './new_password_widget.dart';
 
@@ -19,6 +21,7 @@ class _OtpVerificationWidgetState extends State<OtpVerificationWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -64,7 +67,7 @@ class _OtpVerificationWidgetState extends State<OtpVerificationWidget> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Text(
-                        'Enter OTP send to *****1763',
+                        'Enter OTP send to *****'+ appState.resetPhoneNumber.text.substring(5),
                         style: TextStyle(
                           fontSize: 14,
                           color: Color(0xff0F0F0F),
@@ -265,12 +268,17 @@ class _OtpVerificationWidgetState extends State<OtpVerificationWidget> {
                         padding: const EdgeInsets.only(top: 50.0),
                         child: TextButton(
                             onPressed: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => NewPasswordWidget(),
-                                ),
-                              );
+                              try {
+                                await appState.passwordReset();
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => NewPasswordWidget(),
+                                  ),
+                                );
+                              }catch(e){
+                                print(e);
+                              }
                             },
                             child: Padding(
                               padding: const EdgeInsets.only(left: 50.0, right: 50, top: 6.0, bottom: 6.0),

@@ -1,5 +1,6 @@
 import 'package:cabgo/views/verify_page_widget.dart';
 import 'package:provider/provider.dart';
+import '../exceptions/exceptions.dart';
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import 'package:cabgo/states/app_state.dart';
@@ -59,17 +60,32 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          if(formKey.currentState.validate()){
-           await appState.passangerRegister();
-            print('submitted to backend');
-           await Navigator.push(
-             context,
-             MaterialPageRoute(
-               builder: (context) => VerifyPageWidget(),
-             ),
-           );
-          }
 
+          if(formKey.currentState.validate()){
+            try {
+              await appState.register();
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => VerifyPageWidget(),
+                ),
+              );
+            }on UserRegistrationError catch(e){
+             ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('There was a problem registering.'),
+                    backgroundColor: Colors.red,
+                    action: SnackBarAction(
+                      label: 'Try again',
+                      textColor: Colors.white,
+                      onPressed: () {
+                        // Some code to undo the change.
+                      },
+                    ),
+                  )
+              );
+            }
+          }
 
         },
         backgroundColor: FlutterFlowTheme.of(context).primaryColor,
