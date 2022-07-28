@@ -80,6 +80,7 @@ class AppState with ChangeNotifier{
   String userRegisterPhone;
 
   User user;
+  var currentColor = Colors.white;
 
   //reset password
   TextEditingController resetPhoneNumber = TextEditingController();
@@ -240,6 +241,7 @@ class AppState with ChangeNotifier{
 
  void setService(int serviceID){
     _selectedService = serviceID;
+    currentColor = Colors.blue;
     estimateImage = services[_selectedService-1]['image'];
     estimatePrice = (double.parse(services[_selectedService-1]['price']) * double.parse(_info.totalDistance.substring(0,_info.totalDistance.length - 3))).toString();
   }
@@ -382,13 +384,14 @@ class AppState with ChangeNotifier{
   //user Auth
   // ! SEND REQUEST
   Future<void> passangerLogin() async {
+
     try{
+
     final response = await ApiClient().login(emailController.text,passwordController.text,_fcmToken, _deviceID,);
 
            //_addNewItem('access_token', response['access_token']);
            _accessToken = response['access_token'];
            await getUserDetails();
-
 
            dynamic data =  await ApiClient().getUser(_accessToken);
            user = User(fullName: data['first_name']+ ' '+data['last_name'],
@@ -397,6 +400,7 @@ class AppState with ChangeNotifier{
             _isLoggedIn = true;
            await ApiClient().setFcmToken(_accessToken, _fcmToken);
            notifyListeners();
+           
     } on InvalidCredentials{
 
       return 'Invalid_login_details';

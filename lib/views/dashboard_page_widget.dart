@@ -96,6 +96,7 @@ class _MapState extends State<Map> {
   }
 
   Timer _debounce;
+  int currentindex = 0;
 
 
 
@@ -543,7 +544,7 @@ class _MapState extends State<Map> {
                                                 border:  OutlineInputBorder(
                                                     borderSide:  BorderSide(color: Colors.teal)
                                                 ),
-                                                hintText: "Where to destination 111?" ,
+                                                hintText: "Where to destination ?" ,
                                                 suffixIcon: Icon(Icons.pin_drop_outlined, color: Colors.blue,),
 
                                                 contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
@@ -875,64 +876,74 @@ class _MapState extends State<Map> {
                   //services here!!!!!
 
                   children: [
+
                   for (var service in appState.services)
 
-                    GestureDetector(
+                    InkWell(
                       onTap: () {
                         appState.setService(service['id']);
+                        setState(() {
+                          appState.selectedService == service['id'] ? appState.currentColor : Colors.white;
+                        });
                       },
                       child: Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: (appState.selectedService == service['id']) ? appState.currentColor : Colors.white, // Here we checked!
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.all(Radius.circular(15))),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
 
-                            Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 5),
-                              child: Text(
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 5),
+                                child: Text(
                                   'R' + (distance * double.parse(service['price'])).toString(), // estimated price of ride
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyText1
-                                    .override(
-                                      fontFamily: 'Red Hat Display',
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w300,
-                                    ),
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyText1
+                                      .override(
+                                    fontFamily: 'Red Hat Display',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
                               ),
-                            ),
-                            Image.network(
-                              service['image'],
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.contain,
-                            ),
-                            Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
-                              child: Text(
-                                service['capacity'],
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyText1
-                                    .override(
-                                      fontFamily: 'Red Hat Display',
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w300,
-                                    ),
+                              Image.network(
+                                service['image'],
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.contain,
                               ),
-                            ),
-                            Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
-                              child: Text(
-                                service['name'],
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyText1
-                                    .override(
-                                      fontFamily: 'Red Hat Display',
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
+                                child: Text(
+                                  service['capacity'],
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyText1
+                                      .override(
+                                    fontFamily: 'Red Hat Display',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
+                                child: Text(
+                                  service['name'],
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyText1
+                                      .override(
+                                    fontFamily: 'Red Hat Display',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ), // 1
