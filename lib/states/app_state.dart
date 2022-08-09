@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -142,6 +143,7 @@ class AppState with ChangeNotifier{
 
   bool dragrableOneVisibilty = true;
   bool dragableTwoVibility = false;
+  bool dragableThreeVibility = false;
 
   // chat height
   double chatHeight = 1.5;
@@ -161,12 +163,12 @@ class AppState with ChangeNotifier{
 
 
 
-  // //on background handler
-  Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    // make sure you call `initializeApp` before using other Firebase services.
-    await Firebase.initializeApp();
-    print("Handling a background message: ${message}");
-  }
+  // // //on background handler
+  // Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  //   // make sure you call `initializeApp` before using other Firebase services.
+  //   await Firebase.initializeApp();
+  //   print("Handling a background message: ${message}");
+  // }
 
   AppState(){
     _getUserLocation();
@@ -174,7 +176,7 @@ class AppState with ChangeNotifier{
     _getTokens();
     _registerNotification();
     _getDeviceData();
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     googlePlace = GooglePlace(dotenv.get('API_KEY'));
     startFocusNode = FocusNode();
     endFocusNode = FocusNode();
@@ -201,8 +203,11 @@ class AppState with ChangeNotifier{
     //on foregroud
     FirebaseMessaging.onMessage.listen((RemoteMessage message)  async{
 
+      print(message);
+
       Response data =  await ApiClient().fetchRideDetails(message.data['requestID'], _accessToken);
       Map<String, dynamic> rideData = jsonDecode(data.toString());
+
 
       if(rideData != null) {
         //create notification
@@ -212,7 +217,8 @@ class AppState with ChangeNotifier{
         providerDetails = ProviderDetails(
           fullName: rideData['provider']['first_name'] + ' ' +
               rideData['provider']['last_name'],
-          picture: rideData['provider']['avatar'],
+          picture: dotenv.get('BASE_URL') + rideData['provider']['avatar'],
+          phone:rideData['provider']['mobile'],
           rating: rideData['provider']['rating'],
           price: (double.parse(rideData['service_type']['price']) * double.parse(rideData['distance'])).toString(),
           serviceImage: rideData['service_type']['image'],
@@ -221,7 +227,7 @@ class AppState with ChangeNotifier{
 
         incomeMessage = true;
         notifyListeners();
-        print(providerDetails);
+        print('test me now ');
       }
 
     });
@@ -473,10 +479,23 @@ class AppState with ChangeNotifier{
 
   // ! SEND REQUEST
   Future<void> passangerLogout() async {
-    await _storage.delete(key: 'access_token', aOptions: _getAndroidOptions());
-    await _storage.delete(key: 'refresh_token', aOptions: _getAndroidOptions());
-    _isLoggedIn = false;
-    notifyListeners();
+    try {
+      await _storage.delete(
+          key: 'access_token', aOptions: _getAndroidOptions());
+      await ApiClient().logout(_accessToken);
+
+      _isLoggedIn = false;
+      incomeMessage = true;
+
+      topContainerVisibility = false;
+      bottomContainerVisibility = true;
+      dragrableOneVisibilty = true;
+      dragableTwoVibility = false;
+
+      notifyListeners();
+    }catch(e){
+      print(e);
+    }
   }
 
   Future<String> readSecureData(String key) async {
@@ -521,14 +540,13 @@ class AppState with ChangeNotifier{
 
   Future<dynamic> sendTripRequest() async {
   try {
-
     dynamic data = await TripRequest().sendRequest(
       _accessToken,placeA, placeB, _selectedService, double.parse(_info.totalDistance.substring(0,_info.totalDistance.length - 3)),);
-
-
     return data;
-  }catch(e){
-    print(e);
+  }on NoDriversAvailable catch(e){
+
+    throw NoDriversAvailable();
+  } catch(e){
       throw ErrorTripRequest();
   }
 
@@ -539,6 +557,20 @@ class AppState with ChangeNotifier{
       notifyListeners();
   }
 
+  Future<void> callDriver() async{
+
+    try{
+      await ApiClient().callDriver(_accessToken, user.phone,providerDetails.phone);
+    }catch(e){
+      throw ErrorCallingDriver;
+    }
+
+
+  }
+  double dp(double val, int places){
+    num mod = pow(10.0, places);
+    return ((val * mod).round().toDouble() / mod);
+  }
 
 
 }

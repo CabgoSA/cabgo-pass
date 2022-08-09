@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
-    if(appState.isLoggedIn) {
+    if(appState.accessToken != null) {
       return MaterialApp(
         title: 'Cabgo',
         localizationsDelegates: [

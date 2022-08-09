@@ -127,7 +127,7 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                   controller: appState.textController2,
                                   textInputAction: TextInputAction.next,
                                   maxLength: 1,
-                                  maxLengthEnforced: true,
+                                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
                                   autofocus: true,
                                   obscureText: false,
                                   decoration: InputDecoration(
@@ -164,7 +164,7 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                   controller: appState.textController3,
                                   textInputAction: TextInputAction.next,
                                   maxLength: 1,
-                                  maxLengthEnforced: true,
+                                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
                                   autofocus: true,
                                   obscureText: false,
                                   decoration: InputDecoration(
@@ -200,7 +200,7 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                 child: TextFormField(
                                   controller: appState.textController4,
                                   maxLength: 1,
-                                  maxLengthEnforced: true,
+                                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
                                   autofocus: true,
                                   obscureText: false,
                                   decoration: InputDecoration(

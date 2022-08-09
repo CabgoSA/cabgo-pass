@@ -26,3 +26,6 @@ class ErrorGettingServices implements Exception{}
 class RequestError implements Exception{}
 
 class ErrorGettingUser implements Exception{}
+class NoDriversAvailable implements Exception{}
+
+class ErrorCallingDriver implements Exception{}

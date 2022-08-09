@@ -28,6 +28,7 @@ class TripRequest {
   Future<dynamic> sendRequest(String accessToken, LatLng source , LatLng destination, int serviceType , double distance) async {
      _dio.options.headers["Authorization"] = 'Bearer $accessToken';
      _dio.options.headers['content-Type'] = 'application/json';
+     print('test');
     try {
       Response response = await _dio.post(
         dotenv.get('BASE_URL') + 'api/user/send/request' ,
@@ -44,11 +45,13 @@ class TripRequest {
         options: Options(headers: {'Accept': 'application/json'}),
       );
 
-      print('sent');
-      print(response);
-      return response.data;
+        return response.data;
+
     } on DioError catch (e) {
-      throw RequestError();
+      if(e.error == "Http status error [422]"){
+        throw NoDriversAvailable();
+      }
+      throw ErrorTripRequest();
     }
   }
 

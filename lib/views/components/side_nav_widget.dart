@@ -285,14 +285,16 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                   padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
                   child: InkWell(
                     onTap: () async {
-                      await appState.passangerLogout();
-                      if(!appState.isLoggedIn) {
+                      try {
+                        await appState.passangerLogout();
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => HomePageWidget(),
                           ),
                         );
+                      }catch(e){
+                        print(e);
                       }
                     },
                     child: Text(

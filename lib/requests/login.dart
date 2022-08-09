@@ -92,6 +92,41 @@ class ApiClient {
     }
   }
 
+  Future<dynamic> logout(String accessToken) async {
+    try {
+      _dio.options.headers["Authorization"] = 'Bearer $accessToken';
+      Response response = await _dio.post(
+        dotenv.get('BASE_URL') + '/api/user/logout',
+        options: Options(headers: {'Accept': 'application/json'}),
+      );
+
+      return response.data;
+    } catch(e){
+      throw InvalidCredentials();
+    }
+  }
+
+  Future<void> callDriver(String accessToken,String userPhone,String driverPhone ) async{
+
+    try {
+      _dio.options.headers["Authorization"] = 'Bearer $accessToken';
+      await _dio.post(
+        dotenv.get('BASE_URL') + 'api/user/call/user',
+        data: {
+          'phone_number': userPhone,
+          'phone_number2': driverPhone,
+        },
+
+        options: Options(headers: {'Accept': 'application/json'}),
+      );
+
+    } on DioError catch (e) {
+      throw ErrorCallingDriver;
+    }
+  }
+
+
+
   Future<void> setFcmToken(String accessToken,token) async{
     try{
       _dio.options.headers["Authorization"] = 'Bearer $accessToken';

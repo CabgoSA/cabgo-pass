@@ -125,7 +125,7 @@ class _OtpVerificationWidgetState extends State<OtpVerificationWidget> {
                               child: TextFormField(
                                 textInputAction: TextInputAction.next,
                                 maxLength: 1,
-                                maxLengthEnforced: true,
+                                maxLengthEnforcement: MaxLengthEnforcement.enforced,
                                 autofocus: true,
                                 obscureText: false,
                                 decoration: InputDecoration(
@@ -161,7 +161,7 @@ class _OtpVerificationWidgetState extends State<OtpVerificationWidget> {
                               child: TextFormField(
                                 textInputAction: TextInputAction.next,
                                 maxLength: 1,
-                                maxLengthEnforced: true,
+                                maxLengthEnforcement: MaxLengthEnforcement.enforced,
                                 autofocus: true,
                                 obscureText: false,
                                 decoration: InputDecoration(
@@ -196,9 +196,8 @@ class _OtpVerificationWidgetState extends State<OtpVerificationWidget> {
                               width: 50,
                               height: 60,
                               child: TextFormField(
-
                                 maxLength: 1,
-                                maxLengthEnforced: true,
+                                maxLengthEnforcement: MaxLengthEnforcement.enforced,
                                 autofocus: true,
                                 obscureText: false,
                                 decoration: InputDecoration(
