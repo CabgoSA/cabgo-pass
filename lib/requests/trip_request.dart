@@ -55,4 +55,22 @@ class TripRequest {
     }
   }
 
+  Future<dynamic> rateProvider(String accessToken, String requestID, int rating, String comment) async {
+    _dio.options.headers["Authorization"] = 'Bearer $accessToken';
+    try {
+      await _dio.post(
+        dotenv.get('BASE_URL') + 'api/user/rate/provider' ,
+        data : {
+          'request_id': requestID,
+          'rating': rating,
+          'comment': comment,
+        },
+        options: Options(headers: {'Accept': 'application/json'}),
+      );
+
+    } on DioError catch (e) {
+      throw ErrorTripRequest();
+    }
+  }
+
 }

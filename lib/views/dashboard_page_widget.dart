@@ -14,6 +14,7 @@ import '../flutter_flow/flutter_flow_widgets.dart';
 import '../states/app_state.dart';
 import 'chat_page_widget.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 class DashboardPageWidget extends StatefulWidget {
   const DashboardPageWidget({Key key}) : super(key: key);
@@ -30,12 +31,10 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
     if (appState.notifications != null) {
-        print('incoming message');
         setState(() {
           appState.dragableTwoVibility = true;
           appState.dragrableOneVisibilty = false;
         });
-
     }
 
     return Scaffold(
@@ -99,6 +98,11 @@ class _MapState extends State<Map> {
   Timer _debounce;
   int currentindex = 0;
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
 
 
 
@@ -565,7 +569,7 @@ class _MapState extends State<Map> {
 
               //gradabletwoVibilty
               Visibility(
-                visible: appState.dragableTwoVibility,
+                visible: (appState.dragableTwoVibility && appState.rideNotification == null),
                 child:  DraggableScrollableSheet(
                     initialChildSize: 0.4,
                     minChildSize: 0.2,
@@ -795,7 +799,7 @@ class _MapState extends State<Map> {
                     }),
               ),
               Visibility(
-                visible: appState.dragableThreeVibility,
+                visible: (appState.rideNotification == 'Ride Started'),
                 child:  DraggableScrollableSheet(
                     initialChildSize: 0.4,
                     minChildSize: 0.2,
@@ -803,6 +807,7 @@ class _MapState extends State<Map> {
                     snapSizes: [0.5, 1],
                     snap: true,
                     builder: (BuildContext context, scrollSheetController) {
+
                       return Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -848,173 +853,117 @@ class _MapState extends State<Map> {
                                           ),
                                         ),
                                       ),
-                                      Row(
-                                        children: [
-                                          Text('Request Accepted', style: TextStyle(
-                                              fontSize: 18.0,
-                                              fontWeight: FontWeight.w500,
-                                              fontFamily: "Red Hat Display"
+                                       Center(
+                                         child: Text(
+                                            appState.rideNotification,
+                                           textAlign: TextAlign.center,
                                           ),
+                                        ),
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                          textStyle: const TextStyle(fontSize: 20),
+                                        ),
+                                        onPressed: () {
+                                          appState.updateNotification();
+                                        },
+                                        child: const Text('Ok'),
+                                      ),
+
+                                    ],
+                                  ));
+
+
+                            },
+                          ));
+                    }),
+              ),
+              Visibility(
+                visible: (appState.rideNotification == 'Ride Completed'),
+                child:  DraggableScrollableSheet(
+                    initialChildSize: 0.4,
+                    minChildSize: 0.2,
+                    maxChildSize: 1,
+                    snapSizes: [0.5, 1],
+                    snap: true,
+                    builder: (BuildContext context, scrollSheetController) {
+
+                      return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey[300],
+                                blurRadius: 2.0,
+                                spreadRadius: 0.0,
+                                offset:  Offset(0, -3), // shadow direction: bottom right
+                              )
+                            ],
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(15.0),
+                                topRight: Radius.circular(15.0)),
+                            border: Border(
+                              top: BorderSide(width: 1.0, color: Colors.grey[300]),
+                              left: BorderSide(width: 1.0, color: Colors.grey[300]),
+                              right:
+                              BorderSide(width: 1.0, color: Colors.grey[300]),
+                              bottom:
+                              BorderSide(width: 1.0, color: Colors.grey[300]),
+                            ),
+                          ),
+                          child: ListView.builder(
+                            padding: EdgeInsets.zero,
+                            physics: ClampingScrollPhysics(),
+                            controller: scrollSheetController,
+                            itemCount: 1,
+                            itemBuilder: (BuildContext context, int index) {
+
+
+                              return Padding(
+                                  padding: EdgeInsets.only(left: 8.0, top: 1.0,right: 8.0,bottom: 8.0),
+                                  child: Column(
+                                    children: [
+
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: 10.0),
+                                        child: SizedBox(
+                                          width: 50,
+                                          child: Divider(
+                                            thickness: 2,
                                           ),
-                                          IconButton(
-                                            icon: const Icon(Icons.phone),
+                                        ),
+                                      ),
+                                      Center(
+                                        child: Text(
+                                          'Trip Has Ended',
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      Center(
+                                          child: SmoothStarRating(
+                                            rating: appState.rating,
+                                            isReadOnly: false,
+                                            size: 50,
                                             color: Colors.green,
-                                            tooltip: 'Increase volume by 10',
-                                            onPressed: () async{
-                                              try{
-                                                await appState.callDriver();
+                                            filledIconData: Icons.star,
+                                            halfFilledIconData: Icons.star,
+                                            defaultIconData: Icons.star_border,
+                                            starCount: 5,
+                                            allowHalfRating: false,
+                                            spacing: 2.0,
+                                            onRated: (value) async{
+                                              try {
+                                                await appState.rateRide(value);
+                                                appState.updateNotification();
                                               }catch(e){
                                                 print(e);
                                               }
                                             },
-                                          ),
+                                          )),
 
-                                        ],
-                                      ),
-                                      // Generated code for this ListView Widget...
-                                      Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(0, 12, 0, 44),
-                                        child: ListView(
-                                          padding: EdgeInsets.zero,
-                                          primary: false,
-                                          shrinkWrap: true,
-                                          scrollDirection: Axis.vertical,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                                              child: SizedBox(
-                                                width: double.infinity,
-                                                child: Divider(
-                                                  thickness: 0.3,
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              width: double.infinity,
-                                              height: 60,
-
-                                              child: Padding(
-                                                padding: EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
-                                                child: Row(
-                                                  mainAxisSize: MainAxisSize.max,
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    ClipRRect(
-                                                      borderRadius: BorderRadius.circular(26),
-                                                      child: Image.network(
-                                                        'http://cabgo.co.za/uploads/772a0d10d50275d90eb66a74dae0db194ee4ea65.jpg',
-                                                        width: 50,
-                                                        height: 50,
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Padding(
-                                                        padding: EdgeInsetsDirectional.fromSTEB(12, 0, 0, 0),
-                                                        child: Column(
-                                                          mainAxisSize: MainAxisSize.max,
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            Text(
-                                                              appState.providerDetails.fullName,
-                                                              style: FlutterFlowTheme.of(context).bodyText1,
-                                                            ),
-                                                            Row(mainAxisSize: MainAxisSize.max, children: [
-                                                              for (var i = 0; i < 5; i++)
-                                                                Icon(Icons.star, color: Color(0xffFFD700 ),),
-                                                              Padding(
-                                                                padding: EdgeInsetsDirectional.fromSTEB(
-                                                                    12, 0, 0, 0),
-                                                                child: Text(
-                                                                  appState.providerDetails.rating,
-                                                                  style: FlutterFlowTheme.of(context)
-                                                                      .bodyText2,
-                                                                ),
-                                                              )
-                                                            ]),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                                              child: SizedBox(
-                                                width: double.infinity,
-                                                child: Divider(
-                                                  thickness: 0.3,
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              width: double.infinity,
-                                              height: 60,
-                                              child: Padding(
-                                                padding: EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
-                                                child: Row(
-                                                  mainAxisSize: MainAxisSize.max,
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    ClipRRect(
-                                                      borderRadius: BorderRadius.circular(26),
-                                                      child: Image.network(
-                                                        appState.providerDetails.serviceImage,
-                                                        width: 50,
-                                                        height: 50,
-                                                        fit: BoxFit.contain,
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Padding(
-                                                        padding: EdgeInsetsDirectional.fromSTEB(12, 0, 0, 0),
-                                                        child: Column(
-                                                          mainAxisSize: MainAxisSize.max,
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            Text(
-                                                              appState.providerDetails.serviceName,
-                                                              style: FlutterFlowTheme.of(context).bodyText1,
-                                                            ),
-                                                            Row(
-                                                              mainAxisSize: MainAxisSize.max,
-                                                              children: [
-                                                                Text(
-                                                                  '3 Mins',
-                                                                  style: FlutterFlowTheme.of(context).bodyText2,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                        'R'+appState.providerDetails.price
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                                              child: SizedBox(
-                                                width: double.infinity,
-                                                child: Divider(
-                                                  thickness: 0.3,
-                                                ),
-                                              ),
-                                            ),
-
-
-                                          ],
-                                        ),
-                                      )
 
                                     ],
                                   ));
@@ -1188,6 +1137,7 @@ class _MapState extends State<Map> {
                       if(appState.selectedService != null) {
                         Navigator.pop(context);
                         _bottomSheetPay(context, appState,);
+
                       }
                     }catch(e){
 
@@ -1341,7 +1291,7 @@ class _MapState extends State<Map> {
 
                            try{
                              await appState.sendTripRequest();
-
+                             Navigator.pop(context);
                            }on NoDriversAvailable catch(e){
                              ScaffoldMessenger.of(context).showSnackBar(
                                  SnackBar(

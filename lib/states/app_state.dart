@@ -34,7 +34,7 @@ class AppState with ChangeNotifier{
   LatLng placeA;
   LatLng placeB;
   final Set<Polyline> _polyLines = {};
-  final Set<Marker> _markers = {};
+  Set<Marker> _markers = {};
   String _accessToken;
   String _refreshToken;
   GoogleMapController _mapController;
@@ -110,6 +110,7 @@ class AppState with ChangeNotifier{
   ProviderDetails providerDetails;
   GeoCode _geoCode = GeoCode();
   bool incomeMessage = false;
+  String rideNotification;
   bool _isOnline = false;
   bool get isOnline => _isOnline;
   GeoCode get geoCode => _geoCode;
@@ -143,7 +144,9 @@ class AppState with ChangeNotifier{
 
   bool dragrableOneVisibilty = true;
   bool dragableTwoVibility = false;
-  bool dragableThreeVibility = false;
+
+
+  double rating = 3.0;
 
   // chat height
   double chatHeight = 1.5;
@@ -201,39 +204,63 @@ class AppState with ChangeNotifier{
     }
 
     //on foregroud
-    FirebaseMessaging.onMessage.listen((RemoteMessage message)  async{
+    FirebaseMessaging.onMessage.listen((RemoteMessage message)  async {
+      if (message.data['message'] == 'Ride accepted Request') {
+        //print('incoming text');
+        Response data = await ApiClient().fetchRideDetails(
+            message.data['requestID'], _accessToken);
+        Map<String, dynamic> rideData = jsonDecode(data.toString());
 
-      print(message);
+        if (rideData != null) {
+          //create notification
+          notifications = PushNotifications(
+              message.data['message'], message.data['requestID']);
 
-      Response data =  await ApiClient().fetchRideDetails(message.data['requestID'], _accessToken);
-      Map<String, dynamic> rideData = jsonDecode(data.toString());
+          providerDetails = ProviderDetails(
+            fullName: rideData['provider']['first_name'] + ' ' +
+                rideData['provider']['last_name'],
+            picture: dotenv.get('BASE_URL') + rideData['provider']['avatar'],
+            phone: rideData['provider']['mobile'],
+            rating: rideData['provider']['rating'],
+            price: (double.parse(rideData['service_type']['price']) *
+                double.parse(rideData['distance'])).toString(),
+            serviceImage: rideData['service_type']['image'],
+            serviceName: rideData['service_type']['name'],
+          );
 
+          incomeMessage = true;
 
-      if(rideData != null) {
-        //create notification
-        notifications = PushNotifications(
-            message.data['message'], message.data['requestID']);
-
-        providerDetails = ProviderDetails(
-          fullName: rideData['provider']['first_name'] + ' ' +
-              rideData['provider']['last_name'],
-          picture: dotenv.get('BASE_URL') + rideData['provider']['avatar'],
-          phone:rideData['provider']['mobile'],
-          rating: rideData['provider']['rating'],
-          price: (double.parse(rideData['service_type']['price']) * double.parse(rideData['distance'])).toString(),
-          serviceImage: rideData['service_type']['image'],
-          serviceName: rideData['service_type']['name'],
-        );
-
-        incomeMessage = true;
-        notifyListeners();
-        print('test me now ');
+        }
       }
+      if (message.data['message'] == 'Ride Started') {
+          updateNotification();
+          rideNotification = 'Ride Started';
+          dragrableOneVisibilty = false;
+          dragableTwoVibility = false;
 
+        }
+
+      if (message.data['message'] == 'Ride Completed') {
+        updateNotification();
+        rideNotification = 'Ride Completed';
+        providerDetails = null;
+
+      }
+      notifyListeners();
     });
 
   //  on background
 
+  }
+
+
+
+  void updateNotification(){
+
+    dragrableOneVisibilty = true;
+    dragableTwoVibility = false;
+
+    notifyListeners();
   }
 
   void autoCompleteSearch(String value) async {
@@ -567,9 +594,39 @@ class AppState with ChangeNotifier{
 
 
   }
+
   double dp(double val, int places){
     num mod = pow(10.0, places);
     return ((val * mod).round().toDouble() / mod);
+  }
+
+  Future<void> rateRide(double value) async{
+
+    String comment;
+    try{
+      if(value.toInt() == 1){
+        comment = 'terrible';
+      }else if(value.toInt() == 2){
+        comment = 'poor';
+      }else if(value.toInt() == 3){
+        comment = 'ok';
+      } else if(value.toInt() == 4){
+        comment = 'good';
+      }else if(value.toInt() == 5){
+        comment = 'excellent';
+      }
+      await TripRequest().rateProvider(_accessToken,notifications.requestID, value.toInt(), comment);
+      topContainerVisibility = false;
+      bottomContainerVisibility = true;
+      dragrableOneVisibilty = true;
+      dragableTwoVibility = false;
+      rideNotification = null;
+      notifications = null;
+      _info = null;
+      notifyListeners();
+    }catch(e){
+     print(e);
+    }
   }
 
 
