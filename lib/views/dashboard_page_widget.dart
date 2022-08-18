@@ -11,8 +11,6 @@ import 'package:provider/provider.dart';
 import 'package:cabgo/states/app_state.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
-import '../states/app_state.dart';
-import 'chat_page_widget.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
@@ -42,7 +40,7 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
       resizeToAvoidBottomInset: false,
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
       drawer: Container(
-        width: MediaQuery.of(context).size.width * 0.65,
+        width: MediaQuery.of(context).size.width * 0.7,
         child: Drawer(
           elevation: 16,
           child: SideNavWidget(),
@@ -62,6 +60,8 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
             ),
             child: Stack(
               children: [
+
+
                 Align(
                   alignment: AlignmentDirectional(0, 0),
                   child: Map(),
@@ -72,6 +72,14 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                   decoration: BoxDecoration(
                     color: Color(0xFFEEEEEE),
                   ),
+                ),
+                Align(
+                  alignment: AlignmentDirectional.topStart,
+                  child: IconButton(
+                      onPressed: () async {
+                        scaffoldKey.currentState.openDrawer();
+                      },
+                  icon: Icon(Icons.menu)),
                 ),
               ],
             ),
@@ -89,7 +97,7 @@ class Map extends StatefulWidget {
 }
 
 class _MapState extends State<Map> {
-
+  final scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
@@ -982,23 +990,7 @@ class _MapState extends State<Map> {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Align(
-                        alignment: AlignmentDirectional(-1, -1),
-                        child: FlutterFlowIconButton(
-                          borderColor: Colors.transparent,
-                          borderRadius: 30,
-                          borderWidth: 1,
-                          buttonSize: 60,
-                          icon: Icon(
-                            Icons.menu_sharp,
-                            color: Colors.black,
-                            size: 30,
-                          ),
-                          onPressed: () async {
-                            appState.scaffoldKey.currentState.openDrawer();
-                          },
-                        ),
-                      ),
+
                     ],
                   ),
                 ],
@@ -1229,7 +1221,7 @@ class _MapState extends State<Map> {
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 15, 0, 0),
                     child: Text(
-                      'R'+appState.estimatePrice,
+                      'R'+ (appState.dp(appState.estimatePrice)).toString(),
                       style: TextStyle(
                         fontFamily: 'Red Hat Display',
                         fontSize: 18,

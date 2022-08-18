@@ -40,7 +40,6 @@ class AppState with ChangeNotifier{
   GoogleMapController _mapController;
   var uuid = Uuid();
   bool locationServiceActive = true;
-  final scaffoldKey = GlobalKey<ScaffoldState>();
 
   GoogleMapsServices _googleMapsServices = GoogleMapsServices();
 
