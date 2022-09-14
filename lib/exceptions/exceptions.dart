@@ -1,6 +1,5 @@
 class DeviceInfoError implements Exception{}
 
-
 class InvalidCredentials implements Exception{}
 
 class UserRegistrationError implements Exception{}
@@ -9,7 +8,6 @@ class ResetPasswordError implements Exception{}
 
 class OtpVerificationError implements Exception{}
 class ErrorVerifyingOtpPasswordReset implements Exception{}
-
 
 class LocationServiceDisabled implements Exception {}
 
@@ -29,3 +27,5 @@ class ErrorGettingUser implements Exception{}
 class NoDriversAvailable implements Exception{}
 
 class ErrorCallingDriver implements Exception{}
+
+class PushPermission implements Exception{}

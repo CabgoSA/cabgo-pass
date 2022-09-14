@@ -275,12 +275,9 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                     },
                                   ),
                                 );
-
                                 if(formKey.currentState.validate()) {
                                   FocusScope.of(context).unfocus();
-                                  appState.isLoading = true;
                                   try{
-
                                     await appState.passangerLogin();
                                     if (appState.isLoggedIn) {
                                       await Navigator.push(
@@ -291,9 +288,6 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                         ),
                                       );
                                     }else{
-                                      appState.isLoading = false;
-                                      setState(() {
-                                      });
                                       throw InvalidCredentials();
                                     }
                                   } on InvalidCredentials catch(e) {

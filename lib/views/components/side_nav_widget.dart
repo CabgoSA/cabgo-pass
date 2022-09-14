@@ -193,12 +193,13 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                   padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
                   child: InkWell(
                     onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => WalletPageWidget(),
-                        ),
-                      );
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WalletPageWidget(),
+                          ),
+                        );
+
                     },
                     child: Text(
                       'Wallet',

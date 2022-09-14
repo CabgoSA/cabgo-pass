@@ -17,7 +17,19 @@ class TripRequest {
       Response response = await _dio.get(
         dotenv.get('BASE_URL') + 'api/user/services'
       );
-      print(response);
+      return response.data;
+    } on DioError catch (e) {
+      return e.response.data;
+    }
+  }
+
+  Future<dynamic> getPromocode(String accessToken) async {
+    _dio.options.headers["Authorization"] = 'Bearer $accessToken';
+    try {
+      Response response = await _dio.get(
+          dotenv.get('BASE_URL') + 'api/user/promocodes_list'
+      );
+
       return response.data;
     } on DioError catch (e) {
       return e.response.data;
@@ -28,7 +40,7 @@ class TripRequest {
   Future<dynamic> sendRequest(String accessToken, LatLng source , LatLng destination, int serviceType , double distance) async {
      _dio.options.headers["Authorization"] = 'Bearer $accessToken';
      _dio.options.headers['content-Type'] = 'application/json';
-     print('test');
+
     try {
       Response response = await _dio.post(
         dotenv.get('BASE_URL') + 'api/user/send/request' ,
@@ -72,5 +84,7 @@ class TripRequest {
       throw ErrorTripRequest();
     }
   }
+
+
 
 }

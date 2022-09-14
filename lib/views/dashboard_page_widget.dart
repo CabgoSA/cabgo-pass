@@ -1,18 +1,16 @@
 import 'dart:async';
-
 import 'package:cabgo/views/components/side_nav_widget.dart';
 import '../exceptions/exceptions.dart';
-import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:cabgo/states/app_state.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
+
 
 class DashboardPageWidget extends StatefulWidget {
   const DashboardPageWidget({Key key}) : super(key: key);
@@ -60,8 +58,6 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
             ),
             child: Stack(
               children: [
-
-
                 Align(
                   alignment: AlignmentDirectional(0, 0),
                   child: Map(),
@@ -139,20 +135,6 @@ class _MapState extends State<Map> {
             child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SpinKitFadingCircle(
-                    itemBuilder: (BuildContext context, int index) {
-                      return DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: index.isEven ? Colors.red : Colors.green,
-                        ),
-                      );
-                    },
-                  )
-                ],
-              ),
               SizedBox(
                 height: 10,
               ),
@@ -1221,7 +1203,7 @@ class _MapState extends State<Map> {
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 15, 0, 0),
                     child: Text(
-                      'R'+ (appState.dp(appState.estimatePrice)).toString(),
+                      'R'+ (appState.dp(double.parse(appState.estimatePrice),3)).toString(),
                       style: TextStyle(
                         fontFamily: 'Red Hat Display',
                         fontSize: 18,

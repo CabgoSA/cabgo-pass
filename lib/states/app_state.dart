@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocode/geocode.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_webservice/places.dart' hide Location ;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -26,7 +25,6 @@ import '../requests/push_notifications.dart';
 import '../requests/user.dart';
 
 class AppState with ChangeNotifier{
-
 
   static LatLng _initialPosition;
   LatLng destination;
@@ -154,6 +152,8 @@ class AppState with ChangeNotifier{
 
   dynamic services;
 
+  dynamic promocodes;
+
 
   int get selectedService => _selectedService;
 
@@ -164,13 +164,6 @@ class AppState with ChangeNotifier{
   bool isLoading = false;
 
 
-
-  // // //on background handler
-  // Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  //   // make sure you call `initializeApp` before using other Firebase services.
-  //   await Firebase.initializeApp();
-  //   print("Handling a background message: ${message}");
-  // }
 
   AppState(){
     _getUserLocation();
@@ -218,7 +211,8 @@ class AppState with ChangeNotifier{
           providerDetails = ProviderDetails(
             fullName: rideData['provider']['first_name'] + ' ' +
                 rideData['provider']['last_name'],
-            picture: dotenv.get('BASE_URL') + rideData['provider']['avatar'],
+            picture: (rideData['provider']['avatar'] == null) ? null : dotenv
+                .get('BASE_URL') + rideData['provider']['avatar'],
             phone: rideData['provider']['mobile'],
             rating: rideData['provider']['rating'],
             price: (double.parse(rideData['service_type']['price']) *
@@ -228,23 +222,20 @@ class AppState with ChangeNotifier{
           );
 
           incomeMessage = true;
-
         }
       }
       if (message.data['message'] == 'Ride Started') {
-          updateNotification();
-          rideNotification = 'Ride Started';
-          dragrableOneVisibilty = false;
-          dragableTwoVibility = false;
-
-        }
-
+        updateNotification();
+        rideNotification = 'Ride Started';
+        dragrableOneVisibilty = false;
+        dragableTwoVibility = false;
+      }
       if (message.data['message'] == 'Ride Completed') {
         updateNotification();
         rideNotification = 'Ride Completed';
         providerDetails = null;
-
       }
+
       notifyListeners();
     });
 
@@ -253,12 +244,9 @@ class AppState with ChangeNotifier{
   }
 
 
-
   void updateNotification(){
-
     dragrableOneVisibilty = true;
     dragableTwoVibility = false;
-
     notifyListeners();
   }
 
@@ -309,6 +297,11 @@ class AppState with ChangeNotifier{
             _initialPosition = LatLng(position.latitude, position.longitude);
 
           });
+
+
+
+
+    //  end
     }catch(e){
       throw GeneralError();
     }
@@ -399,9 +392,6 @@ class AppState with ChangeNotifier{
   }
 
 
-
-
-
   //  LOADING INITIAL POSITION
   void _loadingInitialPosition()async{
     await Future.delayed(Duration(seconds: 5)).then((v) {
@@ -431,7 +421,11 @@ class AppState with ChangeNotifier{
                        picture: data['picture'], rating: data['rating']);
             _isLoggedIn = true;
            await ApiClient().setFcmToken(_accessToken, _fcmToken);
+           promocodes = await TripRequest().getPromocode(_accessToken);
            notifyListeners();
+
+           print("-------------------------------");
+           print(promocodes);
            
     } on InvalidCredentials{
 

@@ -1,4 +1,4 @@
-package com.cabgo.passanger
+package com.cabgo.arider
 
 import io.flutter.embedding.android.FlutterActivity
 
