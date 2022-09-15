@@ -192,8 +192,7 @@ class AppState with ChangeNotifier{
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       _fcmToken = await FirebaseMessaging.instance.getToken();
-      print(_fcmToken);
-
+      
     }
 
     //on foregroud
@@ -425,9 +424,6 @@ class AppState with ChangeNotifier{
            await ApiClient().setFcmToken(_accessToken, _fcmToken);
            promocodes = await TripRequest().getPromocode(_accessToken);
            notifyListeners();
-
-           print("-------------------------------");
-           print(promocodes);
            
     } on InvalidCredentials{
 

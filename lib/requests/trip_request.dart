@@ -57,6 +57,8 @@ class TripRequest {
         options: Options(headers: {'Accept': 'application/json'}),
       );
 
+      print(response);
+
         return response.data;
 
     } on DioError catch (e) {
