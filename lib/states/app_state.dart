@@ -192,11 +192,13 @@ class AppState with ChangeNotifier{
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       _fcmToken = await FirebaseMessaging.instance.getToken();
+      print(_fcmToken);
 
     }
 
     //on foregroud
     FirebaseMessaging.onMessage.listen((RemoteMessage message)  async {
+       print("test ------- incoming message");
       if (message.data['message'] == 'Ride accepted Request') {
         //print('incoming text');
         Response data = await ApiClient().fetchRideDetails(

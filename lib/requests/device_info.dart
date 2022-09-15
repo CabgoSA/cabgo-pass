@@ -22,6 +22,10 @@ class DeviceInfo{
         });
       } else if (Platform.isIOS) {
         deviceType = 'ios';
+      await deviceInfoPlugin.deviceInfo.then((value){
+         data = value.toMap();
+         deviceID = data['identifierForVendor'];
+       });
       }
 
     } on PlatformException {
