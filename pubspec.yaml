@@ -93,7 +93,6 @@ flutter:
     - assets/images/
     - assets/videos/
     - assets/audios/
-    - assets/lottie_animations/
     - assets/rive_animations/
     - assets/pdfs/
     - .env

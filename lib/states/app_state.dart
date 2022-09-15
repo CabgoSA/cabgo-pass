@@ -207,10 +207,10 @@ class AppState with ChangeNotifier{
 
         if (rideData != null) {
           //create notification
-          notifications = PushNotifications(
-              message.data['message'], message.data['requestID']);
-
-          providerDetails = ProviderDetails(
+           notifications = PushNotifications(
+           message.data['message'], message.data['requestID']);
+            providerDetails = ProviderDetails(
+            providerID: rideData['provider']['id'], 
             fullName: rideData['provider']['first_name'] + ' ' +
                 rideData['provider']['last_name'],
             picture: (rideData['provider']['avatar'] == null) ? null : dotenv
