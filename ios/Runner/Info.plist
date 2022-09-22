@@ -55,5 +55,9 @@
 	<string>This App needs to use location</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>FirebaseMessagingAutoInitEnabled</key>
+	<string>NO</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 </dict>
 </plist>

@@ -50,88 +50,90 @@ class _PaymentPageWidgetState extends State<PaymentPageWidget> {
       body: SafeArea(
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * 1,
-                decoration: BoxDecoration(
-                  color: Color(0xFFEEEEEE),
-                ),
-                child: Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(5, 0, 5, 0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 5),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Image.asset(
-                                'assets/images/Cash_40x40pt.png',
-                                width: 40,
-                                height: 40,
-                                fit: BoxFit.contain,
-                              ),
-                              Padding(
-                                padding:
-                                    EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                                child: Text(
-                                  'Cash',
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyText1
-                                      .override(
-                                        fontFamily: 'Red Hat Display',
-                                        fontWeight: FontWeight.w300,
-                                      ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 1,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFEEEEEE),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(5, 0, 5, 0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 5),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Image.asset(
+                                  'assets/images/Cash_40x40pt.png',
+                                  width: 40,
+                                  height: 40,
+                                  fit: BoxFit.contain,
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Divider(
-                          height: 2,
-                          thickness: 2,
-                          indent: 0,
-                          endIndent: 0,
-                          color: FlutterFlowTheme.of(context).black600,
-                        ),
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Image.asset(
-                                'assets/images/Card_40x40pt.png',
-                                width: 40,
-                                height: 40,
-                                fit: BoxFit.contain,
-                              ),
-                              Padding(
-                                padding:
-                                    EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
-                                child: Text(
-                                  'Card',
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyText1
-                                      .override(
-                                        fontFamily: 'Red Hat Display',
-                                        fontWeight: FontWeight.w300,
-                                      ),
+                                Padding(
+                                  padding:
+                                      EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
+                                  child: Text(
+                                    'Cash',
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyText1
+                                        .override(
+                                          fontFamily: 'Red Hat Display',
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                          Divider(
+                            height: 2,
+                            thickness: 2,
+                            indent: 0,
+                            endIndent: 0,
+                            color: FlutterFlowTheme.of(context).black600,
+                          ),
+                          Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Image.asset(
+                                  'assets/images/Card_40x40pt.png',
+                                  width: 40,
+                                  height: 40,
+                                  fit: BoxFit.contain,
+                                ),
+                                Padding(
+                                  padding:
+                                      EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
+                                  child: Text(
+                                    'Card',
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyText1
+                                        .override(
+                                          fontFamily: 'Red Hat Display',
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

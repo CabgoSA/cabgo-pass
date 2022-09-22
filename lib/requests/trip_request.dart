@@ -41,6 +41,7 @@ class TripRequest {
      _dio.options.headers["Authorization"] = 'Bearer $accessToken';
      _dio.options.headers['content-Type'] = 'application/json';
 
+
     try {
       Response response = await _dio.post(
         dotenv.get('BASE_URL') + 'api/user/send/request' ,
@@ -56,8 +57,6 @@ class TripRequest {
         },
         options: Options(headers: {'Accept': 'application/json'}),
       );
-
-      print(response);
 
         return response.data;
 

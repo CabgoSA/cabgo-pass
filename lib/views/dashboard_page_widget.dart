@@ -1262,7 +1262,6 @@ class _MapState extends State<Map> {
                       padding: EdgeInsetsDirectional.fromSTEB(10, 0, 0, 0),
                       child: FFButtonWidget(
                         onPressed: () async{
-
                            try{
                              await appState.sendTripRequest();
                              Navigator.pop(context);
