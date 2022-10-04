@@ -244,6 +244,12 @@ class AppState with ChangeNotifier{
 
   }
 
+  Future<void> delete() async {
+      await ApiClient().delete(_accessToken);
+      _isLoggedIn = false;
+      notifyListeners();
+  }
+
 
   void updateNotification(){
     dragrableOneVisibilty = true;
@@ -412,10 +418,9 @@ class AppState with ChangeNotifier{
 
     final response = await ApiClient().login(emailController.text,passwordController.text,_fcmToken, _deviceID,);
 
-           //_addNewItem('access_token', response['access_token']);
            _accessToken = response['access_token'];
+           if(_accessToken != null){
            await getUserDetails();
-
            dynamic data =  await ApiClient().getUser(_accessToken);
            user = User(fullName: data['first_name']+ ' '+data['last_name'],
                        phone: data['mobile'], email: data['email'],
@@ -424,11 +429,18 @@ class AppState with ChangeNotifier{
            await ApiClient().setFcmToken(_accessToken, _fcmToken);
            promocodes = await TripRequest().getPromocode(_accessToken);
            notifyListeners();
+           } else{
+              _isLoggedIn = false;
+              notifyListeners();
+            return  "Invalid_login_details";
+           }   
            
     } on InvalidCredentials{
-
+      _isLoggedIn = false;
+      notifyListeners();
       return 'Invalid_login_details';
     }
+
 
 
     }

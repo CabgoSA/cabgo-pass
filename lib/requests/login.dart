@@ -92,6 +92,25 @@ class ApiClient {
     }
   }
 
+
+Future<dynamic> delete(String accessToken) async {
+
+    try {
+       _dio.options.headers["Authorization"] = 'Bearer $accessToken';
+       Response response = await _dio.post(
+        dotenv.get('BASE_URL') + 'api/user/delete',
+
+        options: Options(headers: {'Accept': 'application/json'}),
+      );
+
+      return response;
+
+    } catch(e){
+      
+    }
+  }
+
+
   Future<dynamic> logout(String accessToken) async {
     try {
       _dio.options.headers["Authorization"] = 'Bearer $accessToken';

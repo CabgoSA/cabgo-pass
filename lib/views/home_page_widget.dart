@@ -307,36 +307,7 @@ class _HomePageWidgetState extends State<HomePageWidget>
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          InkWell(
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SocialsPageWidget(),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              'Or connect with socials',
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyText1
-                                  .override(
-                                    fontFamily: 'Red Hat Display',
-                                    color: FlutterFlowTheme.of(context)
-                                        .primaryColor,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                            ),
-                          ),
-                        ],
-                      ).animated([animationsMap['rowOnPageLoadAnimation']]),
-                    ),
+                    
                   ],
                 ),
               ),

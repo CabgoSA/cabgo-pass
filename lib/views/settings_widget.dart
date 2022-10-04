@@ -1,4 +1,7 @@
+import 'package:cabgo/states/app_state.dart';
+import 'package:cabgo/views/home_page_widget.dart';
 import 'package:cabgo/views/set_location_page_widget.dart';
+import 'package:provider/provider.dart';
 
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_radio_button.dart';
@@ -18,8 +21,47 @@ class _SettingsWidgetState extends State<SettingsWidget> {
   String radioButtonValue;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  void _delete(BuildContext context,AppState appState) {
+
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            title: const Text('Please Confirm'),
+            content: const Text('Are you sure to remove this account, You will lose all your Benefits'),
+            actions: [
+              // The "Yes" button
+              TextButton(
+                  onPressed: () async{
+                    try {
+                      await appState.delete();
+                      await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomePageWidget(),
+                          ),
+                        );
+                    } catch (e) {
+                    Navigator.of(context).pop();
+                    }
+                    
+                  },
+                  child: const Text('Yes')),
+              TextButton(
+                  onPressed: () {
+                    // Close the dialog
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('No'))
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    final appState = Provider.of<AppState>(context);
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -189,43 +231,33 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                                       ),
                                                     ),
                                                   ),
-                                                  FFButtonWidget(
-                                                    onPressed: () async {
-                                                      await Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              SetLocationPageWidget(),
+                                                FFButtonWidget(
+                                                      onPressed: () async {
+                                                        await Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) => SetLocationPageWidget(),
+                                                          ),
+                                                        );
+                                                      },
+                                                      text: 'Sign In',
+                                                      options: FFButtonOptions(
+                                                        width: 130,
+                                                        height: 40,
+                                                        color: FlutterFlowTheme.of(context).primaryColor,
+                                                        textStyle:
+                                                            FlutterFlowTheme.of(context).subtitle2.override(
+                                                                  fontFamily: 'Red Hat Display',
+                                                                  color: Colors.white,
+                                                                  fontWeight: FontWeight.w300,
+                                                                ),
+                                                        borderSide: BorderSide(
+                                                          color: Colors.transparent,
+                                                          width: 1,
                                                         ),
-                                                      );
-                                                    },
-                                                    text: 'add',
-                                                    options: FFButtonOptions(
-                                                      width: 50,
-                                                      height: 40,
-                                                      color: Color(0x004B39EF),
-                                                      textStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .subtitle2
-                                                              .override(
-                                                                fontFamily:
-                                                                    'Red Hat Display',
-                                                                color: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .secondaryText,
-                                                              ),
-                                                      elevation: 1,
-                                                      borderSide: BorderSide(
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .secondaryText,
-                                                        width: 1,
+                                                        borderRadius: 5,
                                                       ),
-                                                      borderRadius: 0,
                                                     ),
-                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -459,6 +491,100 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                             ),
                                           ),
                                         ),
+
+                                        Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  0, 0, 0, 8),
+                                          child: Container(
+                                            width: double.infinity,
+                                            height: 60,
+                                            decoration: BoxDecoration(
+                                              color: Color(0xFFF4F4F4),
+                                              borderRadius:
+                                                  BorderRadius.circular(0),
+                                            ),
+                                            child: Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .fromSTEB(12, 8, 12, 8),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [
+                                                  
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsetsDirectional
+                                                              .fromSTEB(
+                                                                  12, 0, 0, 0),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            'Delete Account',
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .subtitle2
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Lexend Deca',
+                                                                  color: Color(
+                                                                      0xFF262D34),
+                                                                  fontSize: 16,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .normal,
+                                                                ),
+                                                          ),
+                                                          
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  FFButtonWidget(
+                                                    onPressed: () async {
+                                                      _delete(context, appState);
+                                                    },
+                                                    text: 'Delete',
+                                                    options: FFButtonOptions(
+                                                      width: 50,
+                                                      height: 40,
+                                                      color: Color(0x004B39EF),
+                                                      textStyle:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .subtitle2
+                                                              .override(
+                                                                fontFamily:
+                                                                    'Red Hat Display',
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .secondaryText,
+                                                              ),
+                                                      elevation: 1,
+                                                      borderSide: BorderSide(
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .secondaryText,
+                                                        width: 1,
+                                                      ),
+                                                      borderRadius: 0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      
                                       ],
                                     ),
                                   ),

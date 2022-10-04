@@ -189,27 +189,27 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
-                  child: InkWell(
-                    onTap: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => WalletPageWidget(),
-                          ),
-                        );
+                // Padding(
+                //   padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
+                //   child: InkWell(
+                //     onTap: () async {
+                //         await Navigator.push(
+                //           context,
+                //           MaterialPageRoute(
+                //             builder: (context) => WalletPageWidget(),
+                //           ),
+                //         );
 
-                    },
-                    child: Text(
-                      'Wallet',
-                      style: FlutterFlowTheme.of(context).bodyText1.override(
-                            fontFamily: 'Red Hat Display',
-                            fontSize: 18,
-                          ),
-                    ),
-                  ),
-                ),
+                //     },
+                //     child: Text(
+                //       'Wallet',
+                //       style: FlutterFlowTheme.of(context).bodyText1.override(
+                //             fontFamily: 'Red Hat Display',
+                //             fontSize: 18,
+                //           ),
+                //     ),
+                //   ),
+                // ),
                 Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
                   child: InkWell(
@@ -265,26 +265,26 @@ class _SideNavWidgetState extends State<SideNavWidget> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
-                  child: InkWell(
-                    onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => WalletPageWidget(),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'Become a driver',
-                      style: FlutterFlowTheme.of(context).bodyText1.override(
-                            fontFamily: 'Red Hat Display',
-                            fontSize: 18,
-                          ),
-                    ),
-                  ),
-                ),
+                // Padding(
+                //   padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
+                //   child: InkWell(
+                //     onTap: () async {
+                //       await Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder: (context) => WalletPageWidget(),
+                //         ),
+                //       );
+                //     },
+                //     child: Text(
+                //       'Become a driver',
+                //       style: FlutterFlowTheme.of(context).bodyText1.override(
+                //             fontFamily: 'Red Hat Display',
+                //             fontSize: 18,
+                //           ),
+                //     ),
+                //   ),
+                // ),
                 Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
                   child: InkWell(

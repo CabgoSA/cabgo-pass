@@ -279,7 +279,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                   FocusScope.of(context).unfocus();
                                   try{
                                     await appState.passangerLogin();
-                                    if (appState.isLoggedIn) {
+                                    if (appState.isLoggedIn == true) {
                                       await Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -332,7 +332,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                               ),
                             );
                           },
-                          text: ' need to create  account',
+                          text: ' Need to create  account? click here',
                           options: FFButtonOptions(
                             width: double.infinity,
                             height: 40,
