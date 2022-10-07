@@ -52,7 +52,7 @@
 	<key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This App needs to use location</string>
+	<string>This App needs to use location to be able to function, Allocation of rides, Your driver finding you.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>FirebaseMessagingAutoInitEnabled</key>
