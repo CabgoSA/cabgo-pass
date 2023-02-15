@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
-    if(appState.accessToken != null) {
+    if(appState.isLoggedIn) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Cabgo',

@@ -1,11 +1,9 @@
-import 'dart:ui';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
-
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import '../states/app_state.dart';
-import './otp_verification.dart';
 import 'login_page_widget.dart';
 
 class NewPasswordWidget extends StatefulWidget {
@@ -43,11 +41,11 @@ class _NewPasswordWidgetState extends State<NewPasswordWidget> {
         title: Text(
           'Reset Password',
           style: FlutterFlowTheme.of(context).bodyText1.override(
-            fontFamily: 'Red Hat Display',
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w300,
-          ),
+                fontFamily: 'Red Hat Display',
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w300,
+              ),
         ),
         actions: [],
         centerTitle: false,
@@ -61,7 +59,8 @@ class _NewPasswordWidgetState extends State<NewPasswordWidget> {
             children: [
               SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 50),
+                  padding:
+                      const EdgeInsets.only(left: 8.0, right: 8.0, top: 50),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -70,11 +69,8 @@ class _NewPasswordWidgetState extends State<NewPasswordWidget> {
                         style: TextStyle(
                           fontSize: 14,
                           color: Color(0xff0F0F0F),
-
                         ),
-
                       ),
-
                       Padding(
                         padding: const EdgeInsets.only(top: 30.0),
                         child: TextField(
@@ -82,19 +78,19 @@ class _NewPasswordWidgetState extends State<NewPasswordWidget> {
                           keyboardType: TextInputType.visiblePassword,
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
-
                             hintText: "Enter new password",
                             fillColor: Color(0xffE0E0E0),
-                            enabledBorder:  OutlineInputBorder(
-                                borderSide: BorderSide(width: 1, color: Color(0xff169F49)),
-                                borderRadius: BorderRadius.circular(10)
-                            ),
-                            border:  OutlineInputBorder(
-                              borderSide: BorderSide(width: 1, color: Color(0xff169F49)),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 1, color: Color(0xff169F49)),
+                                borderRadius: BorderRadius.circular(10)),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  width: 1, color: Color(0xff169F49)),
                               borderRadius: BorderRadius.circular(10),
-
                             ),
-                            contentPadding: EdgeInsets.only(left: 15.0, top: 25.0),
+                            contentPadding:
+                                EdgeInsets.only(left: 15.0, top: 25.0),
                             filled: true,
                           ),
                         ),
@@ -106,61 +102,70 @@ class _NewPasswordWidgetState extends State<NewPasswordWidget> {
                           keyboardType: TextInputType.visiblePassword,
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
-
                             hintText: "Confirm new password",
                             fillColor: Color(0xffE0E0E0),
-                            enabledBorder:  OutlineInputBorder(
-                                borderSide: BorderSide(width: 1, color: Color(0xff169F49)),
-                                borderRadius: BorderRadius.circular(10)
-                            ),
-                            border:  OutlineInputBorder(
-                              borderSide: BorderSide(width: 1, color: Color(0xff169F49)),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 1, color: Color(0xff169F49)),
+                                borderRadius: BorderRadius.circular(10)),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  width: 1, color: Color(0xff169F49)),
                               borderRadius: BorderRadius.circular(10),
-
                             ),
-                            contentPadding: EdgeInsets.only(left: 15.0, top: 25.0),
+                            contentPadding:
+                                EdgeInsets.only(left: 15.0, top: 25.0),
                             filled: true,
                           ),
                         ),
                       ),
-
                       Padding(
                         padding: const EdgeInsets.only(top: 30.0),
                         child: TextButton(
                             onPressed: () async {
                               try {
-                                await appState.passwordReset();
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginPageWidget(),
-                                  ),
+                                bool result = await InternetConnectionChecker()
+                                    .hasConnection;
+                                if (result) {
+                                  await appState.passwordReset();
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LoginPageWidget(),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    appState.SnackBarCaller(
+                                        "No Internet connection!"),
+                                  );
+                                }
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  appState.SnackBarCaller(
+                                      "There was a problem setting new password"),
                                 );
-                              }catch(e){
-                                print(e);
                               }
                             },
                             child: Padding(
-                              padding: const EdgeInsets.only(left: 50.0, right: 50, top: 6.0, bottom: 6.0),
-                              child: Text('Submit',
+                              padding: const EdgeInsets.only(
+                                  left: 50.0, right: 50, top: 6.0, bottom: 6.0),
+                              child: Text(
+                                'Submit',
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     fontFamily: "Red Hat Display",
                                     color: Colors.white,
-                                    fontWeight: FontWeight.w400
-                                ),
+                                    fontWeight: FontWeight.w400),
                               ),
                             ),
-
                             style: TextButton.styleFrom(
                               backgroundColor: Color(0xff02A702),
-                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10),
-
-                              )
-
-                              ),
-                            )
-                        ),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              )),
+                            )),
                       ),
                     ],
                   ),

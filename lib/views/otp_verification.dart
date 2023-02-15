@@ -1,6 +1,5 @@
-import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
@@ -44,11 +43,11 @@ class _OtpVerificationWidgetState extends State<OtpVerificationWidget> {
         title: Text(
           'OTP Verification ',
           style: FlutterFlowTheme.of(context).bodyText1.override(
-            fontFamily: 'Red Hat Display',
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w300,
-          ),
+                fontFamily: 'Red Hat Display',
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w300,
+              ),
         ),
         actions: [],
         centerTitle: false,
@@ -62,256 +61,268 @@ class _OtpVerificationWidgetState extends State<OtpVerificationWidget> {
             children: [
               SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 50),
+                  padding:
+                      const EdgeInsets.only(left: 8.0, right: 8.0, top: 50),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Text(
-                        'Enter OTP send to *****'+ appState.resetPhoneNumber.text.substring(5),
+                        'Enter OTP send to *****' +
+                            appState.resetPhoneNumber.text.substring(5),
                         style: TextStyle(
                           fontSize: 14,
                           color: Color(0xff0F0F0F),
-
                         ),
-
                       ),
-
                       Padding(
                         padding: const EdgeInsets.only(top: 50.0),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            SizedBox(
-                              width: 50,
-                              height: 60,
-                              child: TextField(
-                                textInputAction: TextInputAction.next,
-                                maxLength: 1,
-
-                                maxLengthEnforcement: MaxLengthEnforcement.none,
-
-                                autofocus: true,
-                                obscureText: false,
-                                decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                      width: 1,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              SizedBox(
+                                width: 50,
+                                height: 60,
+                                child: TextField(
+                                  textInputAction: TextInputAction.next,
+                                  maxLength: 1,
+                                  maxLengthEnforcement:
+                                      MaxLengthEnforcement.none,
+                                  autofocus: true,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        width: 1,
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4.0),
+                                      ),
                                     ),
-                                    borderRadius: const BorderRadius.all(
-                                       Radius.circular(4.0),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        width: 1,
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4.0),
+                                      ),
                                     ),
                                   ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                      width: 1,
-                                    ),
-                                    borderRadius: const BorderRadius.all(Radius.circular(4.0),
-
-                                    ),
-                                  ),
+                                  style: FlutterFlowTheme.of(context).bodyText1,
+                                  maxLines: 1,
+                                  keyboardType: TextInputType.number,
                                 ),
-                                style: FlutterFlowTheme.of(context).bodyText1,
-                                maxLines: 1,
-                                keyboardType: TextInputType.number,
                               ),
-                            ),
-                            SizedBox(
-                              width: 50,
-                              height: 60,
-                              child: TextFormField(
-                                textInputAction: TextInputAction.next,
-                                maxLength: 1,
-                                maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                                autofocus: true,
-                                obscureText: false,
-                                decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                      width: 1,
+                              SizedBox(
+                                width: 50,
+                                height: 60,
+                                child: TextFormField(
+                                  textInputAction: TextInputAction.next,
+                                  maxLength: 1,
+                                  maxLengthEnforcement:
+                                      MaxLengthEnforcement.enforced,
+                                  autofocus: true,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        width: 1,
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4.0),
+                                      ),
                                     ),
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(4.0),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        width: 1,
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4.0),
+                                      ),
                                     ),
                                   ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                      width: 1,
-                                    ),
-                                    borderRadius: const BorderRadius.all(Radius.circular(4.0),
-
-                                    ),
-                                  ),
+                                  style: FlutterFlowTheme.of(context).bodyText1,
+                                  maxLines: 1,
+                                  keyboardType: TextInputType.number,
                                 ),
-                                style: FlutterFlowTheme.of(context).bodyText1,
-                                maxLines: 1,
-                                keyboardType: TextInputType.number,
                               ),
-                            ),
-                            SizedBox(
-                              width: 50,
-                              height: 60,
-                              child: TextFormField(
-                                textInputAction: TextInputAction.next,
-                                maxLength: 1,
-                                maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                                autofocus: true,
-                                obscureText: false,
-                                decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                      width: 1,
+                              SizedBox(
+                                width: 50,
+                                height: 60,
+                                child: TextFormField(
+                                  textInputAction: TextInputAction.next,
+                                  maxLength: 1,
+                                  maxLengthEnforcement:
+                                      MaxLengthEnforcement.enforced,
+                                  autofocus: true,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        width: 1,
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4.0),
+                                      ),
                                     ),
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(4.0),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        width: 1,
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4.0),
+                                      ),
                                     ),
                                   ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                      width: 1,
-                                    ),
-                                    borderRadius: const BorderRadius.all(Radius.circular(4.0),
-
-                                    ),
-                                  ),
+                                  style: FlutterFlowTheme.of(context).bodyText1,
+                                  maxLines: 1,
+                                  keyboardType: TextInputType.number,
                                 ),
-                                style: FlutterFlowTheme.of(context).bodyText1,
-                                maxLines: 1,
-                                keyboardType: TextInputType.number,
                               ),
-                            ),
-
-                            SizedBox(
-                              width: 50,
-                              height: 60,
-                              child: TextFormField(
-                                maxLength: 1,
-                                maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                                autofocus: true,
-                                obscureText: false,
-                                decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                      width: 1,
+                              SizedBox(
+                                width: 50,
+                                height: 60,
+                                child: TextFormField(
+                                  maxLength: 1,
+                                  maxLengthEnforcement:
+                                      MaxLengthEnforcement.enforced,
+                                  autofocus: true,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        width: 1,
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4.0),
+                                      ),
                                     ),
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(4.0),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        width: 1,
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4.0),
+                                      ),
                                     ),
                                   ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText,
-                                      width: 1,
-                                    ),
-                                    borderRadius: const BorderRadius.all(Radius.circular(4.0),
-
-                                    ),
-                                  ),
+                                  style: FlutterFlowTheme.of(context).bodyText1,
+                                  maxLines: 1,
+                                  keyboardType: TextInputType.number,
                                 ),
-                                style: FlutterFlowTheme.of(context).bodyText1,
-                                maxLines: 1,
-                                keyboardType: TextInputType.number,
                               ),
-                            ),
-                          ]
-                        ),
-
-
-
-
+                            ]),
                       ),
-
-          Padding(
-            padding: const EdgeInsets.only(top: 30.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                      Text('Didn’t recieve code? '),
-                GestureDetector(
-                  onTap: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginPageWidget(),
-                      ),
-                    );
-                  },
-                  child:   Text(
-                    'Resend code',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w900
-                    ),
-                  ),
-
-                )
-
-                      ]
-            )
-          ),
-
+                      Padding(
+                          padding: const EdgeInsets.only(top: 30.0),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text('Didn’t recieve code? '),
+                                GestureDetector(
+                                  onTap: () async {
+                                    try {
+                                      bool result =
+                                          await InternetConnectionChecker()
+                                              .hasConnection;
+                                      if (result) {
+                                        await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                LoginPageWidget(),
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          appState.SnackBarCaller(
+                                              "No Internet Connection!"),
+                                        );
+                                      }
+                                    } catch (_) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        appState.SnackBarCaller(
+                                            "There was a problem!"),
+                                      );
+                                    }
+                                  },
+                                  child: Text(
+                                    'Resend code',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w900),
+                                  ),
+                                )
+                              ])),
                       Padding(
                         padding: const EdgeInsets.only(top: 50.0),
                         child: TextButton(
                             onPressed: () async {
                               try {
-                                await appState.passwordReset();
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => NewPasswordWidget(),
-                                  ),
+                                bool result = await InternetConnectionChecker()
+                                    .hasConnection;
+                                if (result) {
+                                  await appState.passwordReset();
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => NewPasswordWidget(),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    appState.SnackBarCaller(
+                                        "No internet connection!"),
+                                  );
+                                }
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  appState.SnackBarCaller("Incorect OTP"),
                                 );
-                              }catch(e){
-                                print(e);
                               }
                             },
                             child: Padding(
-                              padding: const EdgeInsets.only(left: 50.0, right: 50, top: 6.0, bottom: 6.0),
-                              child: Text('Verify',
+                              padding: const EdgeInsets.only(
+                                  left: 50.0, right: 50, top: 6.0, bottom: 6.0),
+                              child: Text(
+                                'Verify',
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     fontFamily: "Red Hat Display",
                                     color: Colors.white,
-                                    fontWeight: FontWeight.w400
-                                ),
+                                    fontWeight: FontWeight.w400),
                               ),
                             ),
-
                             style: TextButton.styleFrom(
                               backgroundColor: Color(0xff02A702),
-                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10),
-
-                              )
-
-                              ),
-                            )
-                        ),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              )),
+                            )),
                       ),
-
                       Padding(
                           padding: const EdgeInsets.only(top: 30.0),
-                          child:  Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                  'Go back to '
-                              ),
-
-
+                              Text('Go back to '),
                               GestureDetector(
                                 onTap: () async {
                                   await Navigator.push(
@@ -321,24 +332,13 @@ class _OtpVerificationWidgetState extends State<OtpVerificationWidget> {
                                     ),
                                   );
                                 },
-                                child:   Text(
+                                child: Text(
                                   'sign in',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w900
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.w900),
                                 ),
-
                               )
-
-
                             ],
-                          )
-
-
-                      )
-
-
-
+                          ))
                     ],
                   ),
                 ),

@@ -1,3 +1,5 @@
+
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import '../exceptions/exceptions.dart';
 import 'dashboard_page_widget.dart';
@@ -16,11 +18,9 @@ class LoginPageWidget extends StatefulWidget {
 }
 
 class _LoginPageWidgetState extends State<LoginPageWidget> {
-
   bool passwordVisibility;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
-
 
   @override
   void initState() {
@@ -133,7 +133,6 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
                                     ),
-
                                 keyboardType: TextInputType.emailAddress,
                               ),
                             ),
@@ -212,10 +211,10 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
                                     ),
-                                validator: (value){
-                                  if(value != null && value.length <4 ){
+                                validator: (value) {
+                                  if (value != null && value.length < 4) {
                                     return "Enter valid password";
-                                  }else{
+                                  } else {
                                     return null;
                                   }
                                 },
@@ -265,7 +264,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             ElevatedButton(
                               onPressed: () async {
                                 final snackBar = SnackBar(
-                                  content: const Text('In correct logins details'),
+                                  content:
+                                      const Text('In correct logins details'),
                                   backgroundColor: Colors.red,
                                   action: SnackBarAction(
                                     label: 'Try again',
@@ -275,43 +275,55 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                     },
                                   ),
                                 );
-                                if(formKey.currentState.validate()) {
+                                if (formKey.currentState.validate()) {
                                   FocusScope.of(context).unfocus();
-                                  try{
-                                    await appState.passangerLogin();
-                                    if (appState.isLoggedIn == true) {
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              DashboardPageWidget(),
-                                        ),
+                                  try {
+                                    bool result =
+                                        await InternetConnectionChecker()
+                                            .hasConnection;
+                                    if (result) {
+                                      await appState.passangerLogin();
+                                      if (appState.isLoggedIn == true) {
+                                        await Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                DashboardPageWidget(),
+                                          ),
+                                        );
+                                      } else {
+                                        throw InvalidCredentials();
+                                      }
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        appState.SnackBarCaller(
+                                            "No Internet connection!"),
                                       );
-                                    }else{
-                                      throw InvalidCredentials();
                                     }
-                                  } on InvalidCredentials catch(e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  } on InvalidCredentials catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      appState.SnackBarCaller(
+                                          "Incorect Login Details"),
+                                    );
+                                  } on ServerCredentials catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      appState.SnackBarCaller("Server Error"),
+                                    );
                                   }
-
-
-
                                 }
                               },
-                              child: appState.isLoading ?  CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                                  : Text( 'Login'),
-
-
+                              child: appState.isLoading
+                                  ? CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                  : Text('Login'),
                               style: ElevatedButton.styleFrom(
                                   fixedSize: const Size(130, 40),
-                                  primary: FlutterFlowTheme.of(context).primaryColor),
-
-                              ),
-
-
-                  ],
+                                  primary: FlutterFlowTheme.of(context)
+                                      .primaryColor),
+                            ),
+                          ],
                         ),
                       ),
                       Divider(

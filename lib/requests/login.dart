@@ -4,47 +4,59 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
-
-
 class ApiClient {
   final Dio _dio = Dio();
 
-
-  Future<dynamic> registerUser({@required String email, @required String firstName,
-                                @required  String lastName,@required  String phone,
-                                @required  String password,@required  String passwordConfirmation,
-                                @required deviceToken,@required String deviceType,
-                                @required String deviceId
-                              }) async {
+  Future<dynamic> registerUser(
+      {@required String email,
+      @required String firstName,
+      @required String lastName,
+      @required String phone,
+      @required String password,
+      @required String passwordConfirmation,
+      @required deviceToken,
+      @required String deviceType,
+      @required String deviceId}) async {
     try {
       String trimmedPhone = phone.replaceAll(' ', '');
-      if(trimmedPhone.startsWith('0')){
+      if (trimmedPhone.startsWith('0')) {
         trimmedPhone = trimmedPhone.substring(1);
       }
 
       Response response = await _dio.post(
-          dotenv.get('BASE_URL') + 'api/user/signup' ,
-            data : {
-              'first_name': firstName,
-              'last_name': lastName,
-              'email': email,
-              'password': password,
-              'password_confirmation': passwordConfirmation,
-              'device_token': deviceToken,
-              'mobile': '+27$trimmedPhone',
-              'dial_code': '+27',
-              'device_type': deviceType,
-              'login_by': 'manual',
-              'device_id': deviceId
-            },
+        dotenv.get('BASE_URL') + 'api/user/signup',
+        data: {
+          'first_name': firstName,
+          'last_name': lastName,
+          'email': email,
+          'password': password,
+          'password_confirmation': passwordConfirmation,
+          'device_token': deviceToken,
+          'mobile': '+27$trimmedPhone',
+          'dial_code': '+27',
+          'device_type': deviceType,
+          'login_by': 'manual',
+          'device_id': deviceId
+        },
         options: Options(headers: {'Accept': 'application/json'}),
       );
 
-        return response.data;
+      if (response.statusCode == 200 && response.data['error'] != null) {
+        throw PhoneNumberError();
+      }
 
+      return response.data;
     } on DioError catch (e) {
-      throw UserRegistrationError();
+      if (e.response.statusCode == 422) {
+        if (e.response.data['email'] != null &&
+            e.response.data['password'] != null) {
+          throw EmailAndPasswordError();
+        } else if (e.response.data['email'] != null) {
+          throw EmailTakenError();
+        } else if (e.response.data['password'] != null) {
+          throw PasswordShortError();
+        }
+      }
     }
   }
 
@@ -52,10 +64,7 @@ class ApiClient {
     try {
       Response response = await _dio.post(
         dotenv.get('BASE_URL') + 'api/user/verify/otp',
-        data: {
-          'mobile': phone,
-          'otp': otp
-        },
+        data: {'mobile': phone, 'otp': otp},
         options: Options(headers: {'Accept': 'application/json'}),
       );
 
@@ -64,13 +73,13 @@ class ApiClient {
     } on DioError catch (e) {
       return e.response.data;
     }
-
   }
 
-  Future<dynamic> login(String email, String password,String deviceToken, String deviceId ) async {
+  Future<dynamic> login(String email, String password, String deviceToken,
+      String deviceId) async {
     try {
       Response response = await _dio.post(
-        dotenv.get('BASE_URL') + '/oauth/token',
+        dotenv.get('BASE_URL') + 'oauth/token',
         data: {
           'username': email,
           'password': password,
@@ -83,33 +92,27 @@ class ApiClient {
         options: Options(headers: {'Accept': 'application/json'}),
       );
 
-
-
-
       return response.data;
-    } catch(e){
-      throw InvalidCredentials();
+    } on DioError catch (e) {
+      if (e.response.statusCode == 401) {
+        throw InvalidCredentials();
+      } else {
+        throw ServerCredentials();
+      }
     }
   }
 
-
-Future<dynamic> delete(String accessToken) async {
-
+  Future<dynamic> delete(String accessToken) async {
     try {
-       _dio.options.headers["Authorization"] = 'Bearer $accessToken';
-       Response response = await _dio.post(
+      _dio.options.headers["Authorization"] = 'Bearer $accessToken';
+      Response response = await _dio.post(
         dotenv.get('BASE_URL') + 'api/user/delete',
-
         options: Options(headers: {'Accept': 'application/json'}),
       );
 
       return response;
-
-    } catch(e){
-      
-    }
+    } catch (e) {}
   }
-
 
   Future<dynamic> logout(String accessToken) async {
     try {
@@ -120,13 +123,13 @@ Future<dynamic> delete(String accessToken) async {
       );
 
       return response.data;
-    } catch(e){
+    } catch (e) {
       throw InvalidCredentials();
     }
   }
 
-  Future<void> callDriver(String accessToken,String userPhone,String driverPhone ) async{
-
+  Future<void> callDriver(
+      String accessToken, String userPhone, String driverPhone) async {
     try {
       _dio.options.headers["Authorization"] = 'Bearer $accessToken';
       await _dio.post(
@@ -135,35 +138,28 @@ Future<dynamic> delete(String accessToken) async {
           'phone_number': userPhone,
           'phone_number2': driverPhone,
         },
-
         options: Options(headers: {'Accept': 'application/json'}),
       );
-
     } on DioError catch (e) {
       throw ErrorCallingDriver;
     }
   }
 
-
-
-  Future<void> setFcmToken(String accessToken,token) async{
-    try{
+  Future<void> setFcmToken(String accessToken, token) async {
+    try {
       _dio.options.headers["Authorization"] = 'Bearer $accessToken';
       _dio.options.headers['content-Type'] = 'application/json';
       Response response = await _dio.get(
         dotenv.get('BASE_URL') + '/api/user/setFcmToken/$token',
-
         options: Options(headers: {'Accept': 'application/json'}),
       );
-    }catch(e){
-
-    }
+    } catch (e) {}
   }
 
   Future<dynamic> requestResetOtp(String phone) async {
     try {
       String trimmedPhone = phone.replaceAll(' ', '');
-      if(trimmedPhone.startsWith('0')){
+      if (trimmedPhone.startsWith('0')) {
         trimmedPhone = trimmedPhone.substring(1);
       }
       Response response = await _dio.post(
@@ -174,7 +170,6 @@ Future<dynamic> delete(String accessToken) async {
         options: Options(headers: {'Accept': 'application/json'}),
       );
       return response;
-
     } on DioError catch (e) {
       throw ResetPasswordError();
     }
@@ -183,18 +178,14 @@ Future<dynamic> delete(String accessToken) async {
   Future<dynamic> verifyOtpPasswordReset(String phone, String otp) async {
     try {
       String trimmedPhone = phone.replaceAll(' ', '');
-      if(trimmedPhone.startsWith('0')){
+      if (trimmedPhone.startsWith('0')) {
         trimmedPhone = trimmedPhone.substring(1);
       }
       Response response = await _dio.post(
         dotenv.get('BASE_URL') + 'api/user/verify/otp/password',
-        data: {
-          'mobile': '+27$trimmedPhone',
-          'otp': otp
-        },
+        data: {'mobile': '+27$trimmedPhone', 'otp': otp},
         options: Options(headers: {'Accept': 'application/json'}),
       );
-
 
       return response;
     } on DioError catch (e) {
@@ -202,37 +193,37 @@ Future<dynamic> delete(String accessToken) async {
     }
   }
 
-  Future<dynamic> passwordReset(String phone, String newPassword, newPasswordConfirm) async {
-      try {
-        String trimmedPhone = phone.replaceAll(' ', '');
-        if(trimmedPhone.startsWith('0')){
-          trimmedPhone = trimmedPhone.substring(1);
-        }
-        Response response = await _dio.post(
-          dotenv.get('BASE_URL') + 'api/user/reset/password',
-          data: {
-            'mobile': '+27$trimmedPhone',
-            'password': newPassword,
-            'password_confirmation': newPasswordConfirm,
-          },
-          options: Options(headers: {'Accept': 'application/json'}),
-        );
-
-        return response;
-      }catch(e){
-        throw ErrorPasswordReset();
+  Future<dynamic> passwordReset(
+      String phone, String newPassword, newPasswordConfirm) async {
+    try {
+      String trimmedPhone = phone.replaceAll(' ', '');
+      if (trimmedPhone.startsWith('0')) {
+        trimmedPhone = trimmedPhone.substring(1);
       }
+      Response response = await _dio.post(
+        dotenv.get('BASE_URL') + 'api/user/reset/password',
+        data: {
+          'mobile': '+27$trimmedPhone',
+          'password': newPassword,
+          'password_confirmation': newPasswordConfirm,
+        },
+        options: Options(headers: {'Accept': 'application/json'}),
+      );
+
+      return response;
+    } catch (e) {
+      throw ErrorPasswordReset();
+    }
   }
 
-  Future<Response> fetchRideDetails(String requestID,String accessToken) async {
-
+  Future<Response> fetchRideDetails(
+      String requestID, String accessToken) async {
     int id = int.parse(requestID);
 
     _dio.options.headers["Authorization"] = 'Bearer $accessToken';
     try {
-      var response = await _dio.get(
-          dotenv.get('BASE_URL') + 'api/user/trip/details/$id'
-      );
+      var response =
+          await _dio.get(dotenv.get('BASE_URL') + 'api/user/trip/details/$id');
 
       return response;
     } on DioError catch (e) {
@@ -241,21 +232,15 @@ Future<dynamic> delete(String accessToken) async {
   }
 
   Future<dynamic> getUser(String accessToken) async {
-
     try {
       _dio.options.headers['content-Type'] = 'application/json';
       _dio.options.headers["Authorization"] = 'Bearer $accessToken';
-      dynamic response = await _dio.get(
-          dotenv.get('BASE_URL') + 'api/user/details'
-      );
+      dynamic response =
+          await _dio.get(dotenv.get('BASE_URL') + 'api/user/details');
 
       return response.data;
     } on DioError catch (e) {
       throw ErrorGettingUser();
     }
   }
-
-
-
 }
-

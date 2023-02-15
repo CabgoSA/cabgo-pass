@@ -2,17 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:cabgo/requests/secure_storage.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocode/geocode.dart';
-import 'package:google_maps_webservice/places.dart' hide Location ;
+import 'package:google_maps_webservice/places.dart' hide Location;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cabgo/requests/directions_model.dart';
 import 'package:cabgo/requests/google_maps_requests.dart';
-import 'package:google_place/google_place.dart'  hide Location;
+import 'package:google_place/google_place.dart' hide Location;
 import 'package:uuid/uuid.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -24,8 +25,7 @@ import '../requests/providerDetails.dart';
 import '../requests/push_notifications.dart';
 import '../requests/user.dart';
 
-class AppState with ChangeNotifier{
-
+class AppState with ChangeNotifier {
   static LatLng _initialPosition;
   LatLng destination;
   LatLng _lastPosition = _initialPosition;
@@ -47,25 +47,25 @@ class AppState with ChangeNotifier{
   DetailsResult startPosition;
   DetailsResult endPosition;
 
-   FocusNode startFocusNode;
-   FocusNode endFocusNode;
+  FocusNode startFocusNode;
+  FocusNode endFocusNode;
 
   GooglePlace googlePlace;
   List<AutocompletePrediction> predictions = [];
 
-
   //LOGIN CONTOLLER
- TextEditingController emailController = TextEditingController();
- TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
- //REGISTER CONTROLLER
+  //REGISTER CONTROLLER
 
   TextEditingController registerEmailController = TextEditingController();
   TextEditingController registerFirstNameController = TextEditingController();
   TextEditingController registerLastNameController = TextEditingController();
   TextEditingController registerPhoneController = TextEditingController();
   TextEditingController registerPasswordController = TextEditingController();
-  TextEditingController registerConfirmPasswordController = TextEditingController();
+  TextEditingController registerConfirmPasswordController =
+      TextEditingController();
 
   //verify
   TextEditingController textController1 = TextEditingController();
@@ -87,18 +87,16 @@ class AppState with ChangeNotifier{
   TextEditingController newPassword = TextEditingController();
   TextEditingController newPasswordConfirm = TextEditingController();
 
- //local storage
+  //local storage
   final _storage = const FlutterSecureStorage();
   AndroidOptions _getAndroidOptions() => const AndroidOptions(
-    encryptedSharedPreferences: true,
-  );
+        encryptedSharedPreferences: true,
+      );
 
   //  device information
-   String _fcmToken;
+  String _fcmToken;
   String _deviceType;
   String _deviceID;
-
-
 
   final LocationSettings locationSettings = LocationSettings(
     accuracy: LocationAccuracy.high,
@@ -129,7 +127,6 @@ class AppState with ChangeNotifier{
   bool get isLoggedIn => _isLoggedIn;
   GoogleMapsPlaces places = GoogleMapsPlaces(apiKey: dotenv.get('API_KEY'));
 
-
   String requestedDestination;
   double requestedDestinationLat;
   double requestedDestinationLng;
@@ -142,7 +139,6 @@ class AppState with ChangeNotifier{
   bool dragrableOneVisibilty = true;
   bool dragableTwoVibility = false;
 
-
   double rating = 3.0;
 
   // chat height
@@ -154,7 +150,6 @@ class AppState with ChangeNotifier{
 
   dynamic promocodes;
 
-
   int get selectedService => _selectedService;
 
   String estimateImage;
@@ -163,20 +158,18 @@ class AppState with ChangeNotifier{
   String loginError;
   bool isLoading = false;
 
-
-
-  AppState(){
+  AppState() {
     _getUserLocation();
     _loadingInitialPosition();
     _getTokens();
     _registerNotification();
     _getDeviceData();
+    _isUserLogged();
     // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     googlePlace = GooglePlace(dotenv.get('API_KEY'));
     startFocusNode = FocusNode();
     endFocusNode = FocusNode();
   }
-
 
   //    register notification
   void _registerNotification() async {
@@ -192,32 +185,32 @@ class AppState with ChangeNotifier{
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       _fcmToken = await FirebaseMessaging.instance.getToken();
-      
     }
 
     //on foregroud
-    FirebaseMessaging.onMessage.listen((RemoteMessage message)  async {
-       print("test ------- incoming message");
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       if (message.data['message'] == 'Ride accepted Request') {
-        //print('incoming text');
-        Response data = await ApiClient().fetchRideDetails(
-            message.data['requestID'], _accessToken);
+        Response data = await ApiClient()
+            .fetchRideDetails(message.data['requestID'], _accessToken);
         Map<String, dynamic> rideData = jsonDecode(data.toString());
 
         if (rideData != null) {
           //create notification
-           notifications = PushNotifications(
-           message.data['message'], message.data['requestID']);
-            providerDetails = ProviderDetails(
-            providerID: rideData['provider']['id'], 
-            fullName: rideData['provider']['first_name'] + ' ' +
+          notifications = PushNotifications(
+              message.data['message'], message.data['requestID']);
+          providerDetails = ProviderDetails(
+            providerID: rideData['provider']['id'],
+            fullName: rideData['provider']['first_name'] +
+                ' ' +
                 rideData['provider']['last_name'],
-            picture: (rideData['provider']['avatar'] == null) ? null : dotenv
-                .get('BASE_URL') + rideData['provider']['avatar'],
+            picture: (rideData['provider']['avatar'] == null)
+                ? null
+                : dotenv.get('BASE_URL') + rideData['provider']['avatar'],
             phone: rideData['provider']['mobile'],
             rating: rideData['provider']['rating'],
             price: (double.parse(rideData['service_type']['price']) *
-                double.parse(rideData['distance'])).toString(),
+                    double.parse(rideData['distance']))
+                .toString(),
             serviceImage: rideData['service_type']['image'],
             serviceName: rideData['service_type']['name'],
           );
@@ -240,18 +233,16 @@ class AppState with ChangeNotifier{
       notifyListeners();
     });
 
-  //  on background
-
+    //  on background
   }
 
   Future<void> delete() async {
-      await ApiClient().delete(_accessToken);
-      _isLoggedIn = false;
-      notifyListeners();
+    await ApiClient().delete(_accessToken);
+    _isLoggedIn = false;
+    notifyListeners();
   }
 
-
-  void updateNotification(){
+  void updateNotification() {
     dragrableOneVisibilty = true;
     dragableTwoVibility = false;
     notifyListeners();
@@ -259,18 +250,21 @@ class AppState with ChangeNotifier{
 
   void autoCompleteSearch(String value) async {
     var result = await googlePlace.autocomplete.get(value);
-    if (result != null && result.predictions != null ) {
+    if (result != null && result.predictions != null) {
       print(result.predictions.first.description);
-        predictions = result.predictions;
-        notifyListeners();
+      predictions = result.predictions;
+      notifyListeners();
     }
   }
 
- void setService(int serviceID){
+  void setService(int serviceID) {
     _selectedService = serviceID;
     currentColor = Colors.blue;
-    estimateImage = services[_selectedService-1]['image'];
-    estimatePrice = (double.parse(services[_selectedService-1]['price']) * double.parse(_info.totalDistance.substring(0,_info.totalDistance.length - 3))).toString();
+    estimateImage = services[_selectedService - 1]['image'];
+    estimatePrice = (double.parse(services[_selectedService - 1]['price']) *
+            double.parse(_info.totalDistance
+                .substring(0, _info.totalDistance.length - 3)))
+        .toString();
   }
 
   Future<void> _getUserLocation() async {
@@ -299,17 +293,13 @@ class AppState with ChangeNotifier{
       }
       // When we reach here, permissions are granted and we can
       // continue accessing the position of the device.
-      Geolocator.getPositionStream(locationSettings: locationSettings).listen(
-              (Position position) {
-            _initialPosition = LatLng(position.latitude, position.longitude);
+      Geolocator.getPositionStream(locationSettings: locationSettings)
+          .listen((Position position) {
+        _initialPosition = LatLng(position.latitude, position.longitude);
+      });
 
-          });
-
-
-
-
-    //  end
-    }catch(e){
+      //  end
+    } catch (e) {
       throw GeneralError();
     }
 
@@ -317,34 +307,33 @@ class AppState with ChangeNotifier{
   }
 
   //get user token
-  void _getTokens() async{
-     _accessToken =  await readSecureData('access_token');
-     _refreshToken =  await readSecureData('refresh_token');
+  void _getTokens() async {
+    _accessToken = await readSecureData('access_token');
+    _refreshToken = await readSecureData('refresh_token');
   }
 
   //device info
-  void _getDeviceData() async{
-
+  void _getDeviceData() async {
     try {
       await DeviceInfo.getDeviceDetails().then((value) {
         _deviceID = value[0];
         _deviceType = value[1];
       });
-
-    }catch(e){
+    } catch (e) {
       throw DeviceInfoError();
     }
-
   }
 
-
-  //check user is logged in
-  bool isUserLogged() {
-    _isLoggedIn = (accessToken != null) ? true : false;
-   return _isLoggedIn;
+//check is user loggedin
+  Future<void> _isUserLogged() async {
+    await FlutterSecureStorage().read(key: 'access_token').then((value) {
+      print('test login');
+      _isLoggedIn = (value != null) ? true : false;
+      _accessToken = value;
+      print(_accessToken);
+      notifyListeners();
+    });
   }
-
-
 
   // ! ADD A MARKER ON THE MAO
   void _addMarker(LatLng location, String address) {
@@ -354,104 +343,107 @@ class AppState with ChangeNotifier{
         position: location,
         infoWindow: InfoWindow(title: address, snippet: "go here"),
         icon: BitmapDescriptor.defaultMarker));
-     notifyListeners();
+    notifyListeners();
   }
 
 // ! SEND REQUEST
   Future<void> sendRequest() async {
-
-    if(startPosition != null){
-      placeA = LatLng(startPosition.geometry.location.lat, startPosition.geometry.location.lng);
-    }else{
+    if (startPosition != null) {
+      placeA = LatLng(startPosition.geometry.location.lat,
+          startPosition.geometry.location.lng);
+    } else {
       placeA = LatLng(_initialPosition.latitude, _initialPosition.longitude);
     }
 
-    placeB = LatLng(endPosition.geometry.location.lat, endPosition.geometry.location.lng);
+    placeB = LatLng(
+        endPosition.geometry.location.lat, endPosition.geometry.location.lng);
 
-    _addMarker(LatLng(placeA.latitude,placeA.latitude), 'Start position' );
-    _addMarker(LatLng(endPosition.geometry.location.lat,endPosition.geometry.location.lng), endPosition.adrAddress );
+    _addMarker(LatLng(placeA.latitude, placeA.latitude), 'Start position');
+    _addMarker(
+        LatLng(endPosition.geometry.location.lat,
+            endPosition.geometry.location.lng),
+        endPosition.adrAddress);
 
     final directions = await GoogleMapsServices()
         .getDirections(origin: placeA, destination: placeB);
-          _info = directions;
+    _info = directions;
     mapController.animateCamera(
-    _info != null
-    ? CameraUpdate.newLatLngBounds(_info.bounds, 100.0)
-        : CameraUpdate.newCameraPosition(CameraPosition(
-      target: placeA,
-      zoom: 11.5,
-    )),
+      _info != null
+          ? CameraUpdate.newLatLngBounds(_info.bounds, 100.0)
+          : CameraUpdate.newCameraPosition(CameraPosition(
+              target: placeA,
+              zoom: 11.5,
+            )),
     );
-
-
-    }
+  }
 
   // ON CAMERA MOVE
   void onCameraMove(CameraPosition position) {
-      _lastPosition = position.target;
-      notifyListeners();
+    _lastPosition = position.target;
+    notifyListeners();
   }
-
 
   void onCreated(GoogleMapController controller) {
-      _mapController = controller;
-      notifyListeners();
+    _mapController = controller;
+    notifyListeners();
   }
 
-
   //  LOADING INITIAL POSITION
-  void _loadingInitialPosition()async{
+  void _loadingInitialPosition() async {
     await Future.delayed(Duration(seconds: 5)).then((v) {
-      if(_initialPosition == null){
+      if (_initialPosition == null) {
         locationServiceActive = false;
         notifyListeners();
       }
     });
-
   }
 
   //user Auth
   // ! SEND REQUEST
   Future<void> passangerLogin() async {
+    try {
+      final response = await ApiClient().login(
+        emailController.text,
+        passwordController.text,
+        _fcmToken,
+        _deviceID,
+      );
+      _accessToken = response['access_token'];
 
-    try{
+      if (_accessToken != null) {
+        FlutterSecureStorage().write(key: 'access_token', value: _accessToken);
+        await getUserDetails();
+        dynamic data = await ApiClient().getUser(_accessToken);
 
-    final response = await ApiClient().login(emailController.text,passwordController.text,_fcmToken, _deviceID,);
+        user = User(
+            fullName: data['first_name'] + ' ' + data['last_name'],
+            phone: data['mobile'],
+            email: data['email'],
+            picture: data['picture'],
+            rating: data['rating']);
+        _isLoggedIn = true;
 
-           _accessToken = response['access_token'];
-           if(_accessToken != null){
-           await getUserDetails();
-           dynamic data =  await ApiClient().getUser(_accessToken);
-           user = User(fullName: data['first_name']+ ' '+data['last_name'],
-                       phone: data['mobile'], email: data['email'],
-                       picture: data['picture'], rating: data['rating']);
-            _isLoggedIn = true;
-           await ApiClient().setFcmToken(_accessToken, _fcmToken);
-           promocodes = await TripRequest().getPromocode(_accessToken);
-           notifyListeners();
-           } else{
-              _isLoggedIn = false;
-              notifyListeners();
-            return  "Invalid_login_details";
-           }   
-           
-    } on InvalidCredentials{
+        await ApiClient().setFcmToken(_accessToken, _fcmToken);
+        promocodes = await TripRequest().getPromocode(_accessToken);
+
+        notifyListeners();
+      }
+    } on InvalidCredentials {
       _isLoggedIn = false;
       notifyListeners();
       return 'Invalid_login_details';
+    } on ServerCredentials {
+      notifyListeners();
+      return 'Server_Error';
     }
-
-
-
-    }
-
+  }
 
   // ! SEND REQUEST
 
   Future<void> register() async {
-
     try {
-      dynamic response = await ApiClient().registerUser(email: registerEmailController.value.text,
+      dynamic response = await ApiClient().registerUser(
+        email: registerEmailController.value.text,
         firstName: registerFirstNameController.value.text,
         lastName: registerLastNameController.value.text,
         phone: registerPhoneController.value.text,
@@ -465,47 +457,48 @@ class AppState with ChangeNotifier{
       //create User
       userRegisterPhone = response['mobile'];
       notifyListeners();
-    }catch(e){
-      print(e);
+    } on PhoneNumberError catch (e) {
+      throw PhoneNumberError();
+    } on EmailTakenError catch (e) {
+      throw EmailTakenError();
+    } on PasswordShortError catch (e) {
+      throw PasswordShortError();
+    } on EmailAndPasswordError catch (e) {
+      throw EmailAndPasswordError();
+    } catch (e) {
       throw UserRegistrationError();
     }
-
   }
 
   Future<void> verifyOtp() async {
     try {
       String otpCode = textController1.text;
-             otpCode += textController2.text;
-            otpCode += textController3.text;
-            otpCode += textController4.text;
+      otpCode += textController2.text;
+      otpCode += textController3.text;
+      otpCode += textController4.text;
 
       dynamic response = await ApiClient().verifyOtp(
         userRegisterPhone,
         otpCode,
       );
-
-    }catch(e){
+    } catch (e) {
       throw OtpVerificationError();
     }
-
-
   }
 
   Future<void> requestResetOtp() async {
     try {
-       await ApiClient().requestResetOtp(resetPhoneNumber.text);
-
-    } on ResetPasswordError catch(e){
+      await ApiClient().requestResetOtp(resetPhoneNumber.text);
+    } on ResetPasswordError catch (e) {
       throw ResetPasswordError();
     }
   }
 
   Future<dynamic> passwordReset() async {
-
-    dynamic data =  await ApiClient().passwordReset(resetPhoneNumber.text, newPassword.text, newPasswordConfirm.text);
+    dynamic data = await ApiClient().passwordReset(
+        resetPhoneNumber.text, newPassword.text, newPasswordConfirm.text);
     return data;
   }
-
 
   // ! SEND REQUEST
   Future<void> passangerLogout() async {
@@ -516,109 +509,105 @@ class AppState with ChangeNotifier{
 
       _isLoggedIn = false;
       incomeMessage = true;
-
       topContainerVisibility = false;
       bottomContainerVisibility = true;
       dragrableOneVisibilty = true;
       dragableTwoVibility = false;
-
       notifyListeners();
-    }catch(e){
-      print(e);
-    }
+    } catch (e) {}
   }
 
   Future<String> readSecureData(String key) async {
     var readData =
-    await _storage.read(key: key, aOptions: _getAndroidOptions());
+        await _storage.read(key: key, aOptions: _getAndroidOptions());
     return readData;
   }
 
-
   void _addNewItem(String key, String value) async {
-      await _storage.write(
-        key: key,
-        value: value,
-        aOptions: _getAndroidOptions(),
+    await _storage.write(
+      key: key,
+      value: value,
+      aOptions: _getAndroidOptions(),
     );
   }
 
-  //get services
+  //get servicesd
 
   Future<void> getServices() async {
-      try {
-        services  = await TripRequest().getServices(_accessToken);
-      }catch(e){
-       throw ErrorGettingServices();
-      }
+    try {
+      services = await TripRequest().getServices(_accessToken);
+    } catch (e) {
+      throw ErrorGettingServices();
+    }
   }
-
 
   Future<dynamic> getUserDetails() async {
-  try {
-    dynamic data = await ApiClient().getUser(_accessToken);
+    try {
+      dynamic data = await ApiClient().getUser(_accessToken);
 
-    return data;
-  } on ErrorGettingUser {
-    throw ErrorGettingUser();
-    } catch(e){
-    throw GeneralError();
-  }
+      return data;
+    } on ErrorGettingUser {
+      throw ErrorGettingUser();
+    } catch (e) {
+      throw GeneralError();
+    }
   }
 
   //get services
 
   Future<dynamic> sendTripRequest() async {
-  try {
-    dynamic data = await TripRequest().sendRequest(
-      _accessToken,placeA, placeB, _selectedService, double.parse(_info.totalDistance.substring(0,_info.totalDistance.length - 3)),);
-    return data;
-  }on NoDriversAvailable catch(e){
-
-    throw NoDriversAvailable();
-  } catch(e){
+    try {
+      dynamic data = await TripRequest().sendRequest(
+        _accessToken,
+        placeA,
+        placeB,
+        _selectedService,
+        double.parse(
+            _info.totalDistance.substring(0, _info.totalDistance.length - 3)),
+      );
+      return data;
+    } on NoDriversAvailable catch (e) {
+      throw NoDriversAvailable();
+    } catch (e) {
       throw ErrorTripRequest();
+    }
   }
 
+  void changeHeight(double height) {
+    chatHeight = height;
+    notifyListeners();
   }
 
-  void changeHeight(double height){
-      chatHeight = height;
-      notifyListeners();
-  }
-
-  Future<void> callDriver() async{
-
-    try{
-      await ApiClient().callDriver(_accessToken, user.phone,providerDetails.phone);
-    }catch(e){
+  Future<void> callDriver() async {
+    try {
+      await ApiClient()
+          .callDriver(_accessToken, user.phone, providerDetails.phone);
+    } catch (e) {
       throw ErrorCallingDriver;
     }
-
-
   }
 
-  double dp(double val, int places){
+  double dp(double val, int places) {
     num mod = pow(10.0, places);
     return ((val * mod).round().toDouble() / mod);
   }
 
-  Future<void> rateRide(double value) async{
-
+  Future<void> rateRide(double value) async {
     String comment;
-    try{
-      if(value.toInt() == 1){
+    try {
+      if (value.toInt() == 1) {
         comment = 'terrible';
-      }else if(value.toInt() == 2){
+      } else if (value.toInt() == 2) {
         comment = 'poor';
-      }else if(value.toInt() == 3){
+      } else if (value.toInt() == 3) {
         comment = 'ok';
-      } else if(value.toInt() == 4){
+      } else if (value.toInt() == 4) {
         comment = 'good';
-      }else if(value.toInt() == 5){
+      } else if (value.toInt() == 5) {
         comment = 'excellent';
       }
-      await TripRequest().rateProvider(_accessToken,notifications.requestID, value.toInt(), comment);
+      await TripRequest().rateProvider(
+          _accessToken, notifications.requestID, value.toInt(), comment);
       topContainerVisibility = false;
       bottomContainerVisibility = true;
       dragrableOneVisibilty = true;
@@ -627,12 +616,14 @@ class AppState with ChangeNotifier{
       notifications = null;
       _info = null;
       notifyListeners();
-    }catch(e){
-     print(e);
+    } catch (e) {
+      print(e);
     }
   }
 
-
+  SnackBar SnackBarCaller(String message) {
+    return SnackBar(
+      content: Text(message),
+    );
+  }
 }
-
-

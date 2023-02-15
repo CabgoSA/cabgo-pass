@@ -1,13 +1,11 @@
-import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import '../states/app_state.dart';
 import './login_page_widget.dart';
-import './new_password_widget.dart';
 
 class VerifyPageWidget extends StatefulWidget {
   const VerifyPageWidget({Key key}) : super(key: key);
@@ -44,11 +42,11 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
         title: Text(
           'OTP Verification ',
           style: FlutterFlowTheme.of(context).bodyText1.override(
-            fontFamily: 'Red Hat Display',
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w300,
-          ),
+                fontFamily: 'Red Hat Display',
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w300,
+              ),
         ),
         actions: [],
         centerTitle: false,
@@ -62,20 +60,19 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
             children: [
               SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 50),
+                  padding:
+                      const EdgeInsets.only(left: 8.0, right: 8.0, top: 50),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Text(
-                        'Enter OTP send to *****'+ appState.userRegisterPhone.substring(8),
+                        'Enter OTP send to *****' +
+                            appState.userRegisterPhone.substring(8),
                         style: TextStyle(
                           fontSize: 14,
                           color: Color(0xff0F0F0F),
-
                         ),
-
                       ),
-
                       Padding(
                         padding: const EdgeInsets.only(top: 50.0),
                         child: Row(
@@ -88,9 +85,8 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                   controller: appState.textController1,
                                   textInputAction: TextInputAction.next,
                                   maxLength: 1,
-
-                                  maxLengthEnforcement: MaxLengthEnforcement.none,
-
+                                  maxLengthEnforcement:
+                                      MaxLengthEnforcement.none,
                                   autofocus: true,
                                   obscureText: false,
                                   decoration: InputDecoration(
@@ -110,8 +106,8 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                             .secondaryText,
                                         width: 1,
                                       ),
-                                      borderRadius: const BorderRadius.all(Radius.circular(4.0),
-
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4.0),
                                       ),
                                     ),
                                   ),
@@ -127,7 +123,8 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                   controller: appState.textController2,
                                   textInputAction: TextInputAction.next,
                                   maxLength: 1,
-                                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                                  maxLengthEnforcement:
+                                      MaxLengthEnforcement.enforced,
                                   autofocus: true,
                                   obscureText: false,
                                   decoration: InputDecoration(
@@ -147,8 +144,8 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                             .secondaryText,
                                         width: 1,
                                       ),
-                                      borderRadius: const BorderRadius.all(Radius.circular(4.0),
-
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4.0),
                                       ),
                                     ),
                                   ),
@@ -164,7 +161,8 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                   controller: appState.textController3,
                                   textInputAction: TextInputAction.next,
                                   maxLength: 1,
-                                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                                  maxLengthEnforcement:
+                                      MaxLengthEnforcement.enforced,
                                   autofocus: true,
                                   obscureText: false,
                                   decoration: InputDecoration(
@@ -184,8 +182,8 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                             .secondaryText,
                                         width: 1,
                                       ),
-                                      borderRadius: const BorderRadius.all(Radius.circular(4.0),
-
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4.0),
                                       ),
                                     ),
                                   ),
@@ -200,7 +198,8 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                 child: TextFormField(
                                   controller: appState.textController4,
                                   maxLength: 1,
-                                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                                  maxLengthEnforcement:
+                                      MaxLengthEnforcement.enforced,
                                   autofocus: true,
                                   obscureText: false,
                                   decoration: InputDecoration(
@@ -220,8 +219,8 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                             .secondaryText,
                                         width: 1,
                                       ),
-                                      borderRadius: const BorderRadius.all(Radius.circular(4.0),
-
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(4.0),
                                       ),
                                     ),
                                   ),
@@ -230,11 +229,8 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                   keyboardType: TextInputType.number,
                                 ),
                               ),
-                            ]
-                        ),
-
+                            ]),
                       ),
-
                       Padding(
                           padding: const EdgeInsets.only(top: 30.0),
                           child: Row(
@@ -243,77 +239,87 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                 Text('Didn’t recieve code? '),
                                 GestureDetector(
                                   onTap: () async {
-                                    await appState.verifyOtp();
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => LoginPageWidget(),
-                                      ),
-                                    );
+                                    bool result =
+                                        await InternetConnectionChecker()
+                                            .hasConnection;
+                                    if (result) {
+                                      await appState.verifyOtp();
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              LoginPageWidget(),
+                                        ),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        appState.SnackBarCaller(
+                                            "No Internet Connection"),
+                                      );
+                                    }
                                   },
-                                  child:   Text(
+                                  child: Text(
                                     'Resend code',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w900
-                                    ),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w900),
                                   ),
-
                                 )
-
-                              ]
-                          )
-                      ),
-
+                              ])),
                       Padding(
                         padding: const EdgeInsets.only(top: 50.0),
                         child: TextButton(
                             onPressed: () async {
                               try {
-                                await appState.verifyOtp();
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        LoginPageWidget(),
-                                  ),
+                                bool result = await InternetConnectionChecker()
+                                    .hasConnection;
+                                if (result) {
+                                  await appState.verifyOtp();
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LoginPageWidget(),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    appState.SnackBarCaller(
+                                        "No Internet Connection"),
+                                  );
+                                }
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  appState.SnackBarCaller(
+                                      "There was a problem verifiying your OTP"),
                                 );
-                              }catch(e){
-                                print(e);
                               }
                             },
                             child: Padding(
-                              padding: const EdgeInsets.only(left: 50.0, right: 50, top: 6.0, bottom: 6.0),
-                              child: Text('Verify',
+                              padding: const EdgeInsets.only(
+                                  left: 50.0, right: 50, top: 6.0, bottom: 6.0),
+                              child: Text(
+                                'Verify',
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     fontFamily: "Red Hat Display",
                                     color: Colors.white,
-                                    fontWeight: FontWeight.w400
-                                ),
+                                    fontWeight: FontWeight.w400),
                               ),
                             ),
-
                             style: TextButton.styleFrom(
                               backgroundColor: Color(0xff02A702),
-                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10),
-
-                              )
-
-                              ),
-                            )
-                        ),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              )),
+                            )),
                       ),
-
                       Padding(
                           padding: const EdgeInsets.only(top: 30.0),
-                          child:  Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                  'Go back to '
-                              ),
-
-
+                              Text('Go back to '),
                               GestureDetector(
                                 onTap: () async {
                                   await Navigator.push(
@@ -323,24 +329,13 @@ class _VerifyPageWidgetState extends State<VerifyPageWidget> {
                                     ),
                                   );
                                 },
-                                child:   Text(
+                                child: Text(
                                   'sign in',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w900
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.w900),
                                 ),
-
                               )
-
-
                             ],
-                          )
-
-
-                      )
-
-
-
+                          ))
                     ],
                   ),
                 ),
